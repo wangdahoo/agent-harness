@@ -1,6 +1,6 @@
 ---
 name: agent-harness
-description: Framework for long-running AI agents that work across multiple context windows. Use when Claude needs to execute complex, multi-session projects that require: (1) Breaking down large requirements into manageable features, (2) Tracking progress across multiple sessions, (3) Maintaining context between context window resets, (4) Coordinating Sprint (planning) and Coding (implementation) agents, (5) Managing feature dependencies and prioritization, (6) Ensuring code quality and working state at each session end. Based on Anthropic's research on effective harnesses for long-running agents.
+description: "Framework for long-running AI agents that work across multiple context windows. Use when Claude needs to execute complex, multi-session projects that require: (1) Breaking down large requirements into manageable features, (2) Tracking progress across multiple sessions, (3) Maintaining context between context window resets, (4) Coordinating Sprint (planning) and Coding (implementation) agents, (5) Managing feature dependencies and prioritization, (6) Ensuring code quality and working state at each session end. Based on Anthropic's research on effective harnesses for long-running agents."
 ---
 
 # Agent Harness
