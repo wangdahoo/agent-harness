@@ -19,6 +19,37 @@ The Sprint Agent is a product planning specialist responsible for translating us
 2. **New Sprint**: User requests new iteration
 3. **Requirement Update**: User wants to modify planned features
 
+## Before Creating New Sprint
+
+### Archive Completed Sprints
+
+Before creating a new sprint, archive any completed sprints to keep `features.json` clean:
+
+```bash
+# List completed sprints
+python3 scripts/archive_sprint.py --list
+
+# Dry run to see what would be archived
+python3 scripts/archive_sprint.py --dry-run
+
+# Archive completed sprints
+python3 scripts/archive_sprint.py
+```
+
+Archived sprints are moved to `.agent-harness/archived/` with:
+- `features.json` - Sprint and feature data
+- `progress.md` - Related session logs
+
+### Archive Directory Structure
+
+```
+.agent-harness/
+└── archived/
+    └── sprint-001_authentication_20240115_143000/
+        ├── features.json    # Archived sprint data
+        └── progress.md      # Related sessions
+```
+
 ## Input Analysis
 
 ### Requirements Breakdown

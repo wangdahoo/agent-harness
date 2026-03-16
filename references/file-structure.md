@@ -225,10 +225,30 @@ project-root/
 ├── features.json
 ├── progress.md
 ├── AGENTS.md
+├── .agent-harness/
+│   └── archived/           # Archived completed sprints
+│       └── sprint-001_*/
+│           ├── features.json
+│           └── progress.md
 ├── src/
 ├── public/
 └── package.json
 ```
+
+### Archived Sprints
+
+Completed sprints are archived to `.agent-harness/archived/` to keep `features.json` clean.
+
+**Archive command:**
+```bash
+python3 scripts/archive_sprint.py
+```
+
+**Archive folder naming:** `{sprint-id}_{sprint-name}_{timestamp}`
+
+**Archived files:**
+- `features.json` - Sprint data with metadata
+- `progress.md` - Sessions related to that sprint
 
 ### Initialization
 

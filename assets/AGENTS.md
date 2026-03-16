@@ -39,6 +39,8 @@ This file provides instructions for AI agents working on this project across mul
 python3 [path-to-skill]/scripts/init_project.py <name> -d "[description]"
 python3 [path-to-skill]/scripts/status.py
 python3 [path-to-skill]/scripts/validate_structure.py
+python3 [path-to-skill]/scripts/archive_sprint.py --list     # List completed sprints
+python3 [path-to-skill]/scripts/archive_sprint.py            # Archive completed sprints
 
 # Project Commands (customize for your project)
 npm run dev       # Start development server

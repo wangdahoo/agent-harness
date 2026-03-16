@@ -19,6 +19,7 @@ Agent Harness is a Python-based framework for long-running AI agents that work a
 python3 scripts/init_project.py <name> -d "[description]"   # Initialize tracking files
 python3 scripts/status.py                                   # Show project status
 python3 scripts/validate_structure.py                       # Validate features.json
+python3 scripts/archive_sprint.py                           # Archive completed sprints
 
 # Python Linting
 python3 -m py_compile scripts/*.py                          # Syntax check all scripts
@@ -168,7 +169,8 @@ agent-harness/
 ├── scripts/
 │   ├── init_project.py      # Initialize tracking files
 │   ├── status.py            # Display project status
-│   └── validate_structure.py # Validate features.json
+│   ├── validate_structure.py # Validate features.json
+│   └── archive_sprint.py    # Archive completed sprints
 ├── assets/
 │   ├── features.json        # Template for feature tracking
 │   ├── progress.md          # Template for session logs
@@ -180,6 +182,16 @@ agent-harness/
 ├── SKILL.md                 # Skill definition for Claude
 ├── README.md                # Project documentation
 └── AGENTS.md                # This file
+```
+
+### Archived Sprints
+
+Completed sprints are archived to `.agent-harness/archived/`:
+
+```bash
+python3 scripts/archive_sprint.py --list     # List completed sprints
+python3 scripts/archive_sprint.py --dry-run  # Preview archive
+python3 scripts/archive_sprint.py            # Archive completed sprints
 ```
 
 ## Critical Rules
