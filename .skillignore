@@ -2,3 +2,5 @@
 AGENTS.md
 README.md
 .git/
+scripts/release.py
+dist/
