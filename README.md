@@ -32,14 +32,8 @@ cd agent-harness
 
 ### 1. 初始化项目
 
-使用斜杠命令：
 ```
 /agent-harness:init My Project
-```
-
-或使用脚本：
-```bash
-python3 scripts/init_project.py "My Project" -d "Project description"
 ```
 
 这将创建：
@@ -48,7 +42,6 @@ python3 scripts/init_project.py "My Project" -d "Project description"
 
 ### 2. 规划 Sprint
 
-使用斜杠命令描述需求：
 ```
 /agent-harness:sprint 实现用户认证系统，包括邮箱登录、社交登录和密码重置
 ```
@@ -62,7 +55,6 @@ Sprint Agent 会：
 
 ### 3. 开始编码
 
-使用斜杠命令：
 ```
 /agent-harness:code
 ```
@@ -78,11 +70,6 @@ Coding Agent 会：
 
 ```
 /agent-harness:status
-```
-
-或：
-```bash
-python3 scripts/status.py
 ```
 
 显示：
@@ -248,11 +235,13 @@ python3 scripts/status.py
 - `completed` - 所有功能完成
 - `on_hold` - 暂时暂停
 
-## 脚本工具
+## 内部脚本（供 slash 命令调用）
+
+以下脚本由 slash 命令内部调用，用户无需直接使用。了解这些脚本有助于理解系统工作原理。
 
 ### init_project.py
 
-初始化项目跟踪文件。
+由 `/agent-harness:init` 调用，初始化项目跟踪文件。
 
 ```bash
 python3 scripts/init_project.py <name> [-d description] [-o output-dir]
@@ -264,7 +253,7 @@ python3 scripts/init_project.py <name> [-d description] [-o output-dir]
 
 ### status.py
 
-显示当前项目状态。
+由 `/agent-harness:status` 调用，显示当前项目状态。
 
 ```bash
 python3 scripts/status.py
@@ -272,7 +261,7 @@ python3 scripts/status.py
 
 ### validate_structure.py
 
-验证 `features.json` 结构。
+由 Sprint Agent 和 Coding Agent 内部调用，验证 `features.json` 结构。
 
 ```bash
 python3 scripts/validate_structure.py
@@ -286,7 +275,7 @@ python3 scripts/validate_structure.py
 
 ### archive_sprint.py
 
-归档已完成的 Sprint。
+由 `/agent-harness:archive` 调用，归档已完成的 Sprint。
 
 ```bash
 python3 scripts/archive_sprint.py [--list] [--dry-run]
@@ -451,10 +440,12 @@ Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
 
 ### 验证失败
 
-1. 运行 `python3 scripts/validate_structure.py`
+Sprint Agent 和 Coding Agent 会自动验证 `features.json` 结构。如果需要手动检查：
+
+1. 使用 slash 命令触发验证（agent 会自动调用）
 2. 查看错误消息
 3. 修复 `features.json` 中的问题
-4. 重新验证
+4. 重新运行相关命令
 
 ## 参考
 
