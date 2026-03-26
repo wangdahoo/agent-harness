@@ -13,20 +13,9 @@
 
 ## 安装
 
-### 方法 1: 使用 .skill 文件（推荐）
-
-1. 下载 `agent-harness.skill` 文件
-2. 在 Claude Desktop 或支持的客户端中导入 skill
-3. Skill 将自动可用
-
-### 方法 2: 直接使用
-
 ```bash
-git clone https://github.com/wangdahoo/agent-harness.git
-cd agent-harness
+npx skills install wangdahoo/agent-harness
 ```
-
-将 `scripts/`, `references/`, `assets/` 目录和 `SKILL.md` 文件保持在同一目录。
 
 ## 快速开始
 
