@@ -87,6 +87,7 @@ Coding Agent 会：
 | `/agent-harness:code` | 开始编码会话 | `/agent-harness:code` |
 | `/agent-harness:status` | 查看项目状态 | `/agent-harness:status` |
 | `/agent-harness:archive` | 归档完成的 Sprint | `/agent-harness:archive` |
+| `/agent-harness:force-archive` | 强制归档所有 Sprint | `/agent-harness:force-archive` |
 
 ## 核心概念
 
@@ -275,15 +276,16 @@ python3 scripts/validate_structure.py
 
 ### archive_sprint.py
 
-由 `/agent-harness:archive` 调用，归档已完成的 Sprint。
+由 `/agent-harness:archive` 和 `/agent-harness:force-archive` 调用，归档 Sprint。
 
 ```bash
-python3 scripts/archive_sprint.py [--list] [--dry-run]
+python3 scripts/archive_sprint.py [--list] [--dry-run] [--force]
 ```
 
 **选项：**
 - `--list` - 列出已完成的 Sprint
 - `--dry-run` - 预览归档操作
+- `--force` - 强制归档所有 Sprint（包括未完成的）
 - `--project-dir` - 项目目录（默认当前目录）
 
 归档后的 Sprint 移动到 `.agent-harness/archived/` 目录。
@@ -415,6 +417,37 @@ Claude: [列出完成的 Sprint 1]
 用户: 确认
 Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
 ```
+
+### 场景 5：强制归档所有 Sprint
+
+当你需要重置项目或清理所有 Sprint 时：
+
+```
+用户: /agent-harness:force-archive
+Claude: [列出所有 3 个 Sprint，包括未完成的]
+用户: 确认强制归档
+Claude: [归档所有 Sprint 到 .agent-harness/archived/ → 清空 features.json 的 sprints]
+```
+
+**注意：** 这将归档所有 Sprint，不管它们的状态如何（包括 in_progress、planning、blocked 等）。
+
+### 场景 5：强制归档所有 Sprint
+
+当你需要清空当前项目状态，开始全新的规划时使用。
+
+```
+用户: /agent-harness:force-archive
+Claude: [警告：将归档所有 Sprint，包括未完成的]
+用户: 确认，我要开始新项目
+Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 project 信息]
+```
+
+**使用场景：**
+- 项目方向完全改变
+- 需要重新规划整个项目
+- 清理旧的无用 Sprint
+
+**注意：** 归档的数据不会丢失，都保存在 `.agent-harness/archived/` 中。
 
 ## 故障排除
 
