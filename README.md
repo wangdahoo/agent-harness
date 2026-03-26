@@ -1,218 +1,270 @@
 # Agent Harness
 
-Framework for long-running AI agents that work across multiple context windows. Enables Claude to execute complex, multi-session projects through Sprint-Coding agent cycles.
+**Agent Harness** 是一个用于管理长期 AI 项目的 Claude Skill，使 Claude 能够跨多个上下文窗口执行复杂的多会话项目。基于 Sprint-Coding Agent 循环模式，确保代码质量和进度可追溯。
 
-## Overview
+## 核心特性
 
-Agent Harness solves the challenge of managing large projects that span multiple context windows by using two specialized agents:
+- **跨上下文持续** - 通过结构化文件在上下文重置后保持项目状态
+- **双 Agent 协作** - Sprint Agent 规划，Coding Agent 实现
+- **进度可追溯** - 每个会话的详细日志和功能状态跟踪
+- **质量保证** - 每个会话结束时代码必须可工作
+- **依赖管理** - 自动处理功能依赖关系和实现顺序
+- **斜杠命令** - 支持简洁的命令快速访问核心功能
 
-- **Sprint Agent**: Plans features and breaks down requirements
-- **Coding Agent**: Implements features one at a time per session
+## 安装
 
-The framework maintains context through structured files, ensuring continuity across sessions.
+### 方法 1: 使用 .skill 文件（推荐）
 
-## Key Features
+1. 下载 `agent-harness.skill` 文件
+2. 在 Claude Desktop 或支持的客户端中导入 skill
+3. Skill 将自动可用
 
-- **Progress Tracking**: Maintains session logs and feature status
-- **Quality Gates**: Ensures working code at each session end
-- **Dependency Management**: Handles feature dependencies automatically
-- **Context Preservation**: Never lose progress across context resets
-- **Sprint Planning**: Structured approach to breaking down requirements
-
-## Installation
-
-This is a skill that integrates with Claude. To use it:
-
-1. Clone or download this skill to your local machine
-2. Ensure the skill is accessible to your Claude instance
-3. The skill will be automatically available when needed
-
-## Quick Start
-
-### 1. Initialize a New Project
+### 方法 2: 直接使用
 
 ```bash
-python3 scripts/init_project.py "My Project" -d "A description of my project"
+git clone https://github.com/wangdahoo/agent-harness.git
+cd agent-harness
 ```
 
-This creates:
-- `features.json` - Feature tracking file
-- `progress.md` - Session log file
+将 `scripts/`, `references/`, `assets/` 目录和 `SKILL.md` 文件保持在同一目录。
 
-### 2. Start Sprint Planning
+## 快速开始
 
-When you need to plan features for a new project or sprint, Claude will automatically invoke the Sprint Agent skill. Just describe your requirements:
+### 1. 初始化项目
 
+使用斜杠命令：
 ```
-I need to build a user authentication system with:
-- Email/password login
-- Social login (Google, GitHub)
-- Password reset
-- Session management
+/agent-harness:init My Project
 ```
 
-The Sprint Agent will:
-- Break down requirements into atomic features
-- Define acceptance criteria for each feature
-- Order features by dependencies
-- Create a sprint in `features.json`
+或使用脚本：
+```bash
+python3 scripts/init_project.py "My Project" -d "Project description"
+```
 
-### 3. Implement Features
+这将创建：
+- `features.json` - 功能和 Sprint 跟踪
+- `progress.md` - 会话日志
 
-Claude will invoke the Coding Agent for each development session. It will:
-- Select the next pending feature
-- Implement following acceptance criteria
-- Test thoroughly
-- Update progress tracking files
-- Commit changes
+### 2. 规划 Sprint
 
-### 4. Check Status
+使用斜杠命令描述需求：
+```
+/agent-harness:sprint 实现用户认证系统，包括邮箱登录、社交登录和密码重置
+```
 
-Monitor your project progress:
+Sprint Agent 会：
+1. 归档已完成的 Sprint（如果有）
+2. 分析需求并拆分为原子功能
+3. 为每个功能定义验收标准
+4. 按依赖关系排序
+5. 更新 `features.json` 和 `progress.md`
 
+### 3. 开始编码
+
+使用斜杠命令：
+```
+/agent-harness:code
+```
+
+Coding Agent 会：
+1. 查看 `progress.md` 和 `features.json`
+2. 选择下一个待实现的功能
+3. 实现并测试
+4. 更新跟踪文件
+5. 提交代码
+
+### 4. 查看状态
+
+```
+/agent-harness:status
+```
+
+或：
 ```bash
 python3 scripts/status.py
 ```
 
-Shows:
-- Current sprint status
-- Feature completion status
-- Recent sessions
-- Next steps
+显示：
+- 当前 Sprint 和目标
+- 功能完成统计
+- 下一个推荐功能
+- 最近的会话记录
 
-### 5. Validate Structure
+## 斜杠命令
 
-Ensure your feature tracking is correct:
+| 命令 | 用途 | 示例 |
+|------|------|------|
+| `/agent-harness:init <name>` | 初始化新项目 | `/agent-harness:init Task Manager` |
+| `/agent-harness:sprint [req]` | 创建或更新 Sprint | `/agent-harness:sprint 添加用户仪表板` |
+| `/agent-harness:code` | 开始编码会话 | `/agent-harness:code` |
+| `/agent-harness:status` | 查看项目状态 | `/agent-harness:status` |
+| `/agent-harness:archive` | 归档完成的 Sprint | `/agent-harness:archive` |
 
-```bash
-python3 scripts/validate_structure.py
+## 核心概念
+
+### Sprint Agent（规划）
+
+**触发时机：**
+- 新项目初始化
+- 新 Sprint 迭代
+- 需求更新
+
+**职责：**
+1. 分析用户需求
+2. 拆分为原子功能（每个会话可完成）
+3. 定义清晰的验收标准
+4. 按依赖关系排序功能
+5. 文档化到 `features.json`
+
+### Coding Agent（实现）
+
+**触发时机：**
+- 每个开发会话
+
+**会话协议：**
+
+**开始阶段：**
+1. 确认工作目录 (`pwd`)
+2. 查看最近工作 (`progress.md`)
+3. 检查提交历史 (`git log`)
+4. 验证项目状态（lint/build）
+
+**工作阶段：**
+1. 选择 **一个** 功能
+2. 理解验收标准
+3. 增量实现
+4. 彻底测试
+
+**结束阶段：**
+1. 更新 `progress.md`
+2. 更新 `features.json` 状态
+3. 确保无错误
+4. 提交更改
+
+## 工作流程
+
 ```
-
-## Core Concepts
-
-### Sprint Agent
-
-**When invoked:**
-- New project initialization
-- New sprint iteration
-- Requirement updates
-
-**Responsibilities:**
-- Analyze user requirements
-- Break into atomic features
-- Define acceptance criteria
-- Order by dependencies
-- Document in `features.json`
-
-### Coding Agent
-
-**When invoked:**
-- Each development session
-
-**Session Protocol:**
-
-**Start:**
-1. Confirm working directory
-2. Review recent work in `progress.md`
-3. Check commit history
-4. Verify project state (lint/build)
-
-**Work:**
-1. Select ONE feature
-2. Understand acceptance criteria
-3. Implement incrementally
-4. Test thoroughly
-
-**End:**
-1. Update `progress.md`
-2. Update feature status in `features.json`
-3. Ensure no errors
-4. Commit changes
-
-## Workflow
-
-```
-User Requirements
-      ↓
+用户需求
+    ↓
 ┌─────────────────┐
-│  Sprint Agent   │ ← Plans features
+│  Sprint Agent   │ ← 拆分需求为功能
 └────────┬────────┘
          │
          ↓
-   features.json
+   features.json   ← 功能定义和状态
          │
          ↓
 ┌─────────────────┐
-│  Coding Agent   │ ← Implements one feature
+│  Coding Agent   │ ← 实现一个功能
 └────────┬────────┘
          │
          ↓
-  Working Code
+   可工作的代码
          │
-         ├─→ Update progress.md
-         ├─→ Update features.json
-         └─→ Commit changes
+         ├─→ 更新 progress.md
+         ├─→ 更新 features.json
+         └─→ 提交更改
          
-    (Loop until sprint complete)
+    (循环直到 Sprint 完成)
 ```
 
-## File Structure
+## 文件结构
 
-### Core Tracking Files
+### 核心跟踪文件
 
-| File | Purpose | Who Updates |
-|------|---------|-------------|
-| `features.json` | Sprints and feature definitions | Sprint creates, Coding updates status |
-| `progress.md` | Session-by-session log | Every agent |
-| `AGENTS.md` | Project-specific instructions | User |
+| 文件 | 用途 | 谁更新 |
+|------|------|--------|
+| `features.json` | Sprint 和功能定义 | Sprint Agent 创建，Coding Agent 更新状态 |
+| `progress.md` | 会话日志 | 所有 Agent |
+| `AGENTS.md` | 项目特定指令 | 用户 |
 
-### Feature Definition
-
-Each feature in `features.json`:
+### features.json 结构
 
 ```json
 {
-  "id": "s1-feat-001",
-  "category": "core | ui | api | auth | data | infra",
-  "priority": "high | medium | low",
-  "title": "Feature title",
-  "description": "Detailed description",
-  "acceptance_criteria": ["Given X, when Y, then Z"],
-  "technical_notes": "Implementation hints",
-  "status": "pending | in_progress | completed | blocked",
-  "dependencies": ["feature-id"],
-  "estimated_complexity": "small | medium | large",
-  "files_affected": ["path/to/file"]
+  "project": {
+    "name": "Project Name",
+    "description": "Project description",
+    "tech_stack": ["react", "node.js"],
+    "created_at": "2024-01-15"
+  },
+  "sprints": [
+    {
+      "id": "sprint-001",
+      "name": "Authentication Sprint",
+      "goal": "Implement user authentication",
+      "status": "in_progress",
+      "created_at": "2024-01-15",
+      "features": [
+        {
+          "id": "s1-feat-001",
+          "category": "auth",
+          "priority": "high",
+          "title": "Setup authentication provider",
+          "description": "Configure auth provider with proper credentials",
+          "acceptance_criteria": [
+            "Auth provider is configured",
+            "Environment variables are set",
+            "Connection can be established"
+          ],
+          "technical_notes": "Use Auth0 or custom JWT",
+          "status": "completed",
+          "dependencies": [],
+          "estimated_complexity": "small",
+          "files_affected": ["config/auth.ts", ".env"]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2024-01-16"
+  }
 }
 ```
 
-### Status Values
+### 功能字段说明
 
-**Feature Status:**
-- `pending` - Not started
-- `in_progress` - Being worked on
-- `completed` - Fully implemented and tested
-- `blocked` - Cannot proceed
+- **id**: 唯一标识符 (如 `s1-feat-001`)
+- **category**: 功能类型 (`core`, `ui`, `api`, `auth`, `data`, `infra`)
+- **priority**: 优先级 (`high`, `medium`, `low`)
+- **status**: 状态 (`pending`, `in_progress`, `completed`, `blocked`)
+- **dependencies**: 依赖的功能 ID 数组
+- **estimated_complexity**: 复杂度估计 (`small` < 2h, `medium` 2-4h, `large` > 4h)
+- **files_affected**: 将被修改的文件路径
 
-**Sprint Status:**
-- `planning` - Being defined
-- `in_progress` - Features being implemented
-- `completed` - All features done
-- `on_hold` - Temporarily paused
+### 状态值
 
-## Scripts
+**功能状态：**
+- `pending` - 未开始
+- `in_progress` - 正在进行
+- `completed` - 完全实现并测试
+- `blocked` - 被阻塞
+
+**Sprint 状态：**
+- `planning` - 正在定义
+- `in_progress` - 功能正在实现
+- `completed` - 所有功能完成
+- `on_hold` - 暂时暂停
+
+## 脚本工具
 
 ### init_project.py
 
-Initialize tracking files for a new project:
+初始化项目跟踪文件。
 
 ```bash
 python3 scripts/init_project.py <name> [-d description] [-o output-dir]
 ```
 
+**选项：**
+- `-d, --description` - 项目描述
+- `-o, --output-dir` - 输出目录（默认当前目录）
+
 ### status.py
 
-Display current project status:
+显示当前项目状态。
 
 ```bash
 python3 scripts/status.py
@@ -220,100 +272,216 @@ python3 scripts/status.py
 
 ### validate_structure.py
 
-Validate `features.json` schema:
+验证 `features.json` 结构。
 
 ```bash
 python3 scripts/validate_structure.py
 ```
 
-## Critical Rules
+检查：
+- 必需字段存在
+- 有效的状态值
+- 正确的 JSON 结构
+- 功能 ID 唯一性
 
-1. **One Feature Per Session** - Coding Agent implements only one feature
-2. **Always Leave Working Code** - Never break the build
-3. **Test End-to-End** - Verify as user would experience
-4. **Commit Frequently** - Small commits enable rollback
-5. **Document Decisions** - Future agents need context
-6. **Never Delete Features** - Only change status
-7. **Use Progress Log** - Record every session
+### archive_sprint.py
 
-## Common Patterns
+归档已完成的 Sprint。
 
-### Starting New Sprint
+```bash
+python3 scripts/archive_sprint.py [--list] [--dry-run]
+```
 
-1. User provides requirements
-2. Sprint Agent analyzes and breaks down
-3. Creates features in `features.json`
-4. Logs planning session in `progress.md`
-5. Returns feature summary
+**选项：**
+- `--list` - 列出已完成的 Sprint
+- `--dry-run` - 预览归档操作
+- `--project-dir` - 项目目录（默认当前目录）
 
-### Implementing Feature
+归档后的 Sprint 移动到 `.agent-harness/archived/` 目录。
 
-1. Coding Agent reads `progress.md` and `features.json`
-2. Selects next pending feature
-3. Implements following acceptance criteria
-4. Tests thoroughly
-5. Updates tracking files
-6. Commits changes
+## 设计原理
 
-### Handling Blockers
+### 为什么需要 Agent Harness？
 
-1. Mark feature as `blocked` in `features.json`
-2. Document blocker in `progress.md`
-3. Move to next independent feature
-4. Return to blocked feature when resolved
+**问题：**
+1. **上下文限制** - Claude 的上下文窗口有限，无法在单个会话中处理大型项目
+2. **状态丢失** - 上下文重置后，之前的讨论和决策会丢失
+3. **质量保证** - 多会话项目容易产生不稳定的代码
+4. **进度追踪** - 难以了解项目的整体进度和下一步
 
-## Templates
+**解决方案：**
+1. **结构化文件** - 用 `features.json` 和 `progress.md` 持久化项目状态
+2. **双 Agent 模式** - Sprint Agent 专注规划，Coding Agent 专注实现
+3. **单功能会话** - 每个会话只实现一个功能，确保质量和焦点
+4. **强制协议** - 开始和结束会话的固定流程，确保一致性
 
-Templates are available in `assets/`:
-- `features.json` - Feature tracking template
-- `progress.md` - Session log template
-- `AGENTS.md` - Project instructions template
+### 渐进式加载
 
-## References
+Agent Harness 使用三级加载系统：
 
-Detailed workflow documentation:
+1. **元数据** - 始终在上下文中（~100 词）
+2. **SKILL.md 主体** - Skill 触发时加载（~150 行）
+3. **References** - 按需加载
+   - Sprint Agent 加载 `sprint-agent.md`
+   - Coding Agent 加载 `coding-agent.md`
+   - 示例按需从 `examples.md` 加载
 
-- [Sprint Workflow](references/sprint-workflow.md) - Sprint Agent detailed process
-- [Coding Workflow](references/coding-workflow.md) - Coding Agent session protocol
-- [File Structure](references/file-structure.md) - Complete file schemas
+这确保了每个 Agent 只看到相关内容，最小化上下文占用。
 
-## Best Practices
+### Sprint-Coding 循环
+
+```
+Sprint Agent        →  创建/更新 Sprint
+    ↓
+features.json       →  功能定义和状态
+    ↓
+Coding Agent (会话 1)  →  实现功能 1
+    ↓
+Coding Agent (会话 2)  →  实现功能 2
+    ↓
+Coding Agent (会话 N)  →  实现功能 N
+    ↓
+Sprint Agent        →  创建下一个 Sprint 或归档
+```
+
+这个循环确保：
+- 每次只处理一个功能，降低复杂度
+- 每个会话都留下可工作的代码
+- 进度可追溯，决策有记录
+
+## 关键规则
+
+1. **每个会话一个功能** - 不要试图做太多
+2. **始终留下可工作的代码** - 永远不要破坏构建
+3. **端到端测试** - 像用户一样验证
+4. **频繁提交** - 小提交支持回滚
+5. **永不删除功能** - 只更改状态
+6. **使用进度日志** - 记录每个会话
+
+## 最佳实践
 
 ### Sprint Agent
-- Break large features into atomic pieces
-- Define clear acceptance criteria
-- Consider dependencies carefully
-- Balance sprint complexity mix
+
+- 将大功能拆分为原子片段
+- 定义清晰的验收标准（Given-When-Then 格式）
+- 仔细考虑依赖关系
+- 平衡 Sprint 的复杂度组合
+- 文档化决策和优先级理由
 
 ### Coding Agent
-- Follow session protocol strictly
-- Test before marking complete
-- Commit frequently with clear messages
-- Stay focused on one feature
 
-## Troubleshooting
+- 严格遵循会话协议
+- 完成前测试
+- 使用清晰的消息频繁提交
+- 专注于一个功能
+- 遵循项目约定（见 `AGENTS.md`）
 
-### Build is broken
-1. Check recent commits
-2. Review `progress.md` for changes
-3. Fix errors
-4. Verify with lint/build
+### 项目组织
 
-### Feature too large
-1. Sprint Agent splits into smaller features
-2. Each becomes independent feature
-3. Mark dependencies if needed
+- 每个项目维护自己的 `features.json` 和 `progress.md`
+- 使用 `AGENTS.md` 定义项目特定约定
+- 定期归档已完成的 Sprint
+- 在 `features.json` 中包含实际的技术栈
 
-### Context lost
-1. Read `progress.md` - Recent sessions
-2. Read `features.json` - Current state
-3. Read `AGENTS.md` - Project conventions
-4. Check git log - Recent changes
+## 常见场景
 
-## License
+### 场景 1：启动新项目
 
-This skill is provided as-is for use with Claude AI assistants.
+```
+用户: /agent-harness:init Task Manager
+Claude: [创建 features.json 和 progress.md]
 
-## Contributing
+用户: /agent-harness:sprint 构建任务管理应用，支持创建、编辑、删除任务，以及标签分类
+Claude: [分析需求 → 拆分为 8 个功能 → 更新 features.json]
 
-Feel free to adapt the scripts and templates to fit your project's specific needs. The framework is designed to be flexible and extensible.
+用户: /agent-harness:code
+Claude: [实现第一个功能 → 更新进度 → 提交]
+```
+
+### 场景 2：继续现有项目
+
+```
+用户: /agent-harness:status
+Claude: [显示 Sprint 1 进行中，3/8 功能完成，下一个: s1-feat-004]
+
+用户: /agent-harness:code
+Claude: [查看进度 → 选择 s1-feat-004 → 实现 → 提交]
+```
+
+### 场景 3：处理阻塞
+
+```
+用户: /agent-harness:status
+Claude: [显示 s1-feat-005 被阻塞: 等待第三方 API 密钥]
+
+用户: 先跳过这个，实现下一个
+Claude: [选择 s1-feat-006 (无依赖) → 实现 → 提交]
+```
+
+### 场景 4：归档完成的 Sprint
+
+```
+用户: /agent-harness:archive
+Claude: [列出完成的 Sprint 1]
+用户: 确认
+Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
+```
+
+## 故障排除
+
+### 构建损坏
+
+1. 检查最近的提交
+2. 查看 `progress.md` 中的更改
+3. 修复错误
+4. 用 lint/build 验证
+
+### 功能太大
+
+1. Sprint Agent 将其拆分为更小的功能
+2. 每个成为独立的功能
+3. 如需要，标记依赖关系
+
+### 上下文丢失
+
+1. 读取 `progress.md` - 最近会话
+2. 读取 `features.json` - 当前状态
+3. 读取 `AGENTS.md` - 项目约定
+4. 检查 git log - 最近更改
+
+### 验证失败
+
+1. 运行 `python3 scripts/validate_structure.py`
+2. 查看错误消息
+3. 修复 `features.json` 中的问题
+4. 重新验证
+
+## 参考
+
+- **[SKILL.md](SKILL.md)** - Skill 定义和命令
+- **[references/sprint-agent.md](references/sprint-agent.md)** - Sprint Agent 工作流程和模式
+- **[references/coding-agent.md](references/coding-agent.md)** - Coding Agent 会话协议
+- **[references/examples.md](references/examples.md)** - 完整的示例
+
+## 技术要求
+
+- **Python 3.8+** - 脚本使用标准库，无外部依赖
+- **Git** - 用于版本控制和提交
+- **文本编辑器** - 用于查看/编辑跟踪文件
+
+## 许可
+
+此 skill 可自由用于 Claude AI 助手。
+
+## 贡献
+
+欢迎改进和扩展！核心设计原则：
+
+1. **无外部依赖** - 脚本必须仅使用 Python 标准库
+2. **向后兼容** - 更改不应破坏现有的 `features.json` 文件
+3. **清晰的错误消息** - 所有错误应该是可操作的
+4. **渐进式加载** - 按 Agent 角色组织参考文档
+
+## 致谢
+
+基于 Anthropic 关于长期运行 agent 的有效 harness 研究。
