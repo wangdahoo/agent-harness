@@ -38,10 +38,7 @@ The Coding Agent implements features defined by the Sprint Agent in discrete ses
    - Dependencies
 
 4. **Verify Project State**
-   ```bash
-   pnpm lint      # Check code quality
-   pnpm build     # Ensure build passes
-   ```
+   Run lint and build commands (see AGENTS.md for project-specific commands).
    
    **⚠️ If broken, fix existing issues before starting new work.**
 
@@ -122,25 +119,23 @@ Before marking feature complete:
    - Check happy path and errors
 
 2. **Cross-Platform Testing**
-   - Responsive design (mobile/tablet/desktop)
-   - Dark/light theme compatibility
-   - Different locales (if i18n enabled)
+    - Test relevant platforms for the project
+    - See AGENTS.md for project-specific testing requirements
 
 3. **Technical Testing**
-   - `pnpm lint` passes
-   - `pnpm build` succeeds
-   - Application starts without errors
-   - No console errors
+    - Lint passes (see AGENTS.md for command)
+    - Build succeeds (see AGENTS.md for command)
+    - Application starts without errors
+    - No console errors
 
 ### Testing Checklist
 
 ```
 ☐ Happy path works
 ☐ Error handling works
-☐ Responsive on all devices
-☐ Dark mode works
-☐ Light mode works
-☐ i18n keys used (no hardcoded text)
+☐ Responsive on all devices (if applicable)
+☐ Theme compatibility (if applicable)
+☐ Internationalization (if applicable)
 ☐ No console errors
 ☐ No lint errors
 ☐ Build passes
@@ -200,12 +195,9 @@ Only update the feature status:
 
 ```
 ☐ All acceptance criteria met
-☐ pnpm lint passes
-☐ pnpm build succeeds
+☐ Lint passes
+☐ Build succeeds
 ☐ Manual testing completed
-☐ Responsive design verified
-☐ Theme compatibility checked
-☐ i18n keys used for all text
 ☐ Code committed with descriptive message
 ☐ progress.md updated
 ☐ features.json status updated
@@ -229,10 +221,9 @@ Only update the feature status:
 1. **One Feature Per Session** - Don't try to do too much
 2. **Always Leave Working Code** - Never leave codebase broken
 3. **Follow Acceptance Criteria** - Implement exactly what's specified
-4. **Use Translations** - No hardcoded user-facing strings
-5. **Theme Aware** - Test in both dark and light modes
-6. **Don't Modify features.json Lightly** - Only change feature status
-7. **Commit Frequently** - Enable rollback
+4. **Follow Project Conventions** - See AGENTS.md for code style
+5. **Don't Modify features.json Lightly** - Only change feature status
+6. **Commit Frequently** - Enable rollback
 
 ## Red Flags - Stop and Fix
 
@@ -251,11 +242,9 @@ Only update the feature status:
 
 ### Code Style
 
-- Follow existing patterns
-- Use shadcn/ui components
-- Tailwind CSS for styling
-- Strict TypeScript
-- Named imports for React
+- Follow existing patterns in the codebase
+- See AGENTS.md for project-specific conventions
+- Maintain consistency with neighboring files
 
 ### Commits
 
@@ -268,6 +257,5 @@ Only update the feature status:
 
 - Test as a user would
 - Check both success and failure cases
-- Verify responsive design
-- Test themes and locales
+- Verify project-specific requirements (see AGENTS.md)
 - No manual testing shortcuts

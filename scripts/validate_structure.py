@@ -39,6 +39,11 @@ def validate_feature(feature: Dict, feature_idx: int) -> List[str]:
     if priority and priority not in valid_priorities:
         errors.append(f"Feature {feature_idx}: invalid priority '{priority}'")
     
+    valid_categories = ["core", "ui", "api", "auth", "data", "infra"]
+    category = feature.get("category", "")
+    if category and category not in valid_categories:
+        errors.append(f"Feature {feature_idx}: invalid category '{category}'")
+    
     return errors
 
 

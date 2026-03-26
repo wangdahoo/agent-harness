@@ -7,7 +7,7 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 ARCHIVED_DIR = ".agent-harness/archived"
@@ -19,7 +19,7 @@ def get_completed_sprints(features_data: Dict) -> List[Dict]:
     return [s for s in sprints if s.get("status") == "completed"]
 
 
-def get_in_progress_sprint(features_data: Dict) -> Dict:
+def get_in_progress_sprint(features_data: Dict) -> Optional[Dict]:
     """Get the current in-progress sprint (if any)."""
     sprints = features_data.get("sprints", [])
     for sprint in sprints:
