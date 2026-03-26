@@ -1,22 +1,17 @@
-# Coding Agent Workflow
+# Coding Agent Reference
 
 ## Table of Contents
-1. [Overview](#overview)
-2. [Session Protocol](#session-protocol)
-3. [Feature Implementation Process](#feature-implementation-process)
+1. [Session Protocol](#session-protocol)
+2. [Implementation Process](#implementation-process)
+3. [File Schemas](#file-schemas)
 4. [Testing Requirements](#testing-requirements)
-5. [Progress Documentation](#progress-documentation)
-6. [Quality Checklist](#quality-checklist)
-
-## Overview
-
-The Coding Agent implements features defined by the Sprint Agent in discrete sessions, maintaining a clean, working codebase.
+5. [Examples](#examples)
 
 ## Session Protocol
 
 ### Start of Session
 
-**Always perform these steps in order:**
+**Always perform in order:**
 
 1. **Confirm Location**
    ```bash
@@ -38,20 +33,20 @@ The Coding Agent implements features defined by the Sprint Agent in discrete ses
    - Dependencies
 
 4. **Verify Project State**
-   Run lint and build commands (see AGENTS.md for project-specific commands).
+   Run lint and build commands (see project's AGENTS.md).
    
    **⚠️ If broken, fix existing issues before starting new work.**
 
 ### End of Session
 
-**Always perform these steps:**
+**Always perform:**
 
 1. Update `progress.md` with session summary
 2. Update `features.json` if feature complete
 3. Ensure no lint/build errors
 4. Commit all changes
 
-## Feature Implementation Process
+## Implementation Process
 
 ### Step 1: Select Feature
 
@@ -101,51 +96,17 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`
 
 ### Step 5: Verify Implementation
 
-Check all acceptance criteria are met:
+Check all acceptance criteria:
 - [ ] Each criterion can be demonstrated
 - [ ] Happy path works
 - [ ] Error scenarios handled
 - [ ] Edge cases considered
 
-## Testing Requirements
+## File Schemas
 
-### Pre-Completion Testing
+### progress.md Structure
 
-Before marking feature complete:
-
-1. **Functional Testing**
-   - Test as a user would interact
-   - Verify all acceptance criteria
-   - Check happy path and errors
-
-2. **Cross-Platform Testing**
-    - Test relevant platforms for the project
-    - See AGENTS.md for project-specific testing requirements
-
-3. **Technical Testing**
-    - Lint passes (see AGENTS.md for command)
-    - Build succeeds (see AGENTS.md for command)
-    - Application starts without errors
-    - No console errors
-
-### Testing Checklist
-
-```
-☐ Happy path works
-☐ Error handling works
-☐ Responsive on all devices (if applicable)
-☐ Theme compatibility (if applicable)
-☐ Internationalization (if applicable)
-☐ No console errors
-☐ No lint errors
-☐ Build passes
-```
-
-## Progress Documentation
-
-### Update progress.md
-
-Add entry at the **top** of the sessions section:
+Add entry at **top** of sessions section:
 
 ```markdown
 ## Session N - YYYY-MM-DD
@@ -178,9 +139,9 @@ Add entry at the **top** of the sessions section:
 - [Recommended next feature or follow-up]
 ```
 
-### Update features.json
+### features.json Updates
 
-Only update the feature status:
+Only update feature status field:
 
 ```json
 {
@@ -188,6 +149,53 @@ Only update the feature status:
   "status": "completed"  // or "in_progress"
 }
 ```
+
+### Feature Status Values
+
+| Status | When to Use |
+|--------|-------------|
+| `pending` | Not started |
+| `in_progress` | Currently being worked on |
+| `completed` | Fully implemented and tested |
+| `blocked` | Cannot proceed due to blocker |
+
+## Testing Requirements
+
+### Pre-Completion Testing
+
+Before marking feature complete:
+
+1. **Functional Testing**
+   - Test as a user would interact
+   - Verify all acceptance criteria
+   - Check happy path and errors
+
+2. **Cross-Platform Testing**
+   - Test relevant platforms for the project
+   - See project's AGENTS.md for requirements
+
+3. **Technical Testing**
+   - Lint passes (see AGENTS.md for command)
+   - Build succeeds (see AGENTS.md for command)
+   - Application starts without errors
+   - No console errors
+
+### Testing Checklist
+
+```
+☐ Happy path works
+☐ Error handling works
+☐ Responsive on all devices (if applicable)
+☐ Theme compatibility (if applicable)
+☐ Internationalization (if applicable)
+☐ No console errors
+☐ No lint errors
+☐ Build passes
+```
+
+## Examples
+
+See [examples.md](examples.md) for complete examples.
 
 ## Quality Checklist
 
@@ -221,7 +229,7 @@ Only update the feature status:
 1. **One Feature Per Session** - Don't try to do too much
 2. **Always Leave Working Code** - Never leave codebase broken
 3. **Follow Acceptance Criteria** - Implement exactly what's specified
-4. **Follow Project Conventions** - See AGENTS.md for code style
+4. **Follow Project Conventions** - See project's AGENTS.md for code style
 5. **Don't Modify features.json Lightly** - Only change feature status
 6. **Commit Frequently** - Enable rollback
 
@@ -237,25 +245,3 @@ Only update the feature status:
 - Uncommitted changes from previous session
 
 **Fix these before proceeding with new work.**
-
-## Best Practices
-
-### Code Style
-
-- Follow existing patterns in the codebase
-- See AGENTS.md for project-specific conventions
-- Maintain consistency with neighboring files
-
-### Commits
-
-- Small, logical commits
-- Conventional commit messages
-- Include feature ID in footer
-- Clear, descriptive messages
-
-### Testing
-
-- Test as a user would
-- Check both success and failure cases
-- Verify project-specific requirements (see AGENTS.md)
-- No manual testing shortcuts

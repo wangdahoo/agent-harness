@@ -35,7 +35,7 @@ python3 scripts/validate_structure.py
 3. Order by dependencies
 4. Update `features.json` and `progress.md`
 
-**→ Read [references/sprint-workflow.md](references/sprint-workflow.md) for detailed process**
+**→ Read [references/sprint-agent.md](references/sprint-agent.md) for workflow, schemas, and examples**
 
 ### 2. Feature Implementation (Coding Agent)
 
@@ -49,7 +49,7 @@ python3 scripts/validate_structure.py
 | **Work** | Select ONE feature → implement → test |
 | **End** | Update `progress.md` → update `features.json` → commit |
 
-**→ Read [references/coding-workflow.md](references/coding-workflow.md) for detailed protocol**
+**→ Read [references/coding-agent.md](references/coding-agent.md) for protocol, testing, and schemas**
 
 ### 3. Iterate
 
@@ -59,11 +59,11 @@ Loop: Sprint Agent → Coding Agent → Coding Agent → ... → Sprint Agent
 
 | File | Purpose |
 |------|---------|
-| `features.json` | Sprint and feature tracking (schema: see file-structure.md) |
+| `features.json` | Sprint and feature tracking |
 | `progress.md` | Session log - add entries at top |
 | `AGENTS.md` | Project-specific instructions |
 
-**→ Read [references/file-structure.md](references/file-structure.md) for complete schemas**
+**→ See [references/sprint-agent.md](references/sprint-agent.md) or [references/coding-agent.md](references/coding-agent.md) for schemas**
 
 ## Scripts
 
@@ -85,6 +85,9 @@ python3 scripts/archive_sprint.py [--list|--dry-run]       # Archive completed s
 
 ## References
 
-- **[sprint-workflow.md](references/sprint-workflow.md)** - Sprint Agent process, feature breakdown, dependency management
-- **[coding-workflow.md](references/coding-workflow.md)** - Session protocol, testing requirements, quality checklist
-- **[file-structure.md](references/file-structure.md)** - Complete schemas for features.json and progress.md
+**By Agent Role:**
+- **[sprint-agent.md](references/sprint-agent.md)** - Sprint Agent: workflow, feature breakdown, schemas
+- **[coding-agent.md](references/coding-agent.md)** - Coding Agent: session protocol, testing, schemas
+
+**Complete Examples:**
+- **[examples.md](references/examples.md)** - Realistic examples of features.json, progress.md, and workflows
