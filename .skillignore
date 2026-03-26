@@ -4,3 +4,19 @@ README.md
 .git/
 scripts/release.py
 dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
