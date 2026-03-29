@@ -1,6 +1,6 @@
 ---
 name: agent-harness
-description: "Framework for long-running AI agents that work across multiple context windows. Use when Claude needs to execute complex, multi-session projects that require: (1) Breaking down large requirements into manageable features, (2) Tracking progress across multiple sessions, (3) Maintaining context between context window resets, (4) Coordinating Sprint (planning) and Coding (implementation) agents, (5) Managing feature dependencies and prioritization, (6) Ensuring code quality and working state at each session end. Supports slash commands: /agent-harness [subcommand]. Subcommands: sprint, code, status, init, archive, force-archive. Based on Anthropic's research on effective harnesses for long-running agents."
+description: "Framework for long-running AI agents that work across multiple context windows. Use when Claude needs to execute complex, multi-session projects that require: (1) Breaking down large requirements into manageable features, (2) Tracking progress across multiple sessions, (3) Maintaining context between context window resets, (4) Coordinating Sprint (planning) and Coding (implementation) agents, (5) Managing feature dependencies and prioritization, (6) Ensuring code quality and working state at each session end. Commands: /agent-harness, /agent-harness-init, /agent-harness-sprint, /agent-harness-code, /agent-harness-status, /agent-harness-archive, /agent-harness-force-archive. Based on Anthropic's research on effective harnesses for long-running agents."
 ---
 
 # Agent Harness
@@ -18,32 +18,41 @@ Agent Harness enables Claude to manage long-running projects by:
 
 ## Commands
 
-Agent Harness supports slash commands for quick access to key operations:
+Agent Harness provides slash commands with tab completion. Type `/agent-harness` to see all commands.
 
-### `/agent-harness` or `/agent-harness help`
+### `/agent-harness`
 
 Show available commands and usage.
 
 **Output:**
 ```
 Agent Harness Commands:
-  /agent-harness sprint [req]  - Create or update sprint with feature breakdown
-  /agent-harness code          - Start coding session for next feature
-  /agent-harness status        - Show current project status
-  /agent-harness init <name>   - Initialize new project tracking files
-  /agent-harness archive       - Archive completed sprints
-  /agent-harness force-archive - Force archive ALL sprints (including incomplete)
-  /agent-harness help          - Show this help message
+  /agent-harness-init <name>   - Initialize new project tracking files
+  /agent-harness-sprint [req]  - Create or update sprint with feature breakdown
+  /agent-harness-code          - Start coding session for next feature
+  /agent-harness-status        - Show current project status
+  /agent-harness-archive       - Archive completed sprints
+  /agent-harness-force-archive - Force archive ALL sprints (including incomplete)
 ```
 
-### `/agent-harness sprint [requirements]`
+### `/agent-harness-init <name>`
+
+Initialize new project tracking files.
+
+**Example:** `/agent-harness-init My App`
+
+**Actions:**
+- Create `features.json` and `progress.md`
+- Run `python3 scripts/init_project.py "My App"`
+
+### `/agent-harness-sprint [requirements]`
 
 Create or update sprint with feature breakdown.
 
 **Examples:**
-- `/agent-harness sprint` - Review current sprint and plan next
-- `/agent-harness sprint Add user authentication with email and social login`
-- `/agent-harness sprint Build dashboard with charts and filters`
+- `/agent-harness-sprint` - Review current sprint and plan next
+- `/agent-harness-sprint Add user authentication with email and social login`
+- `/agent-harness-sprint Build dashboard with charts and filters`
 
 **Actions:**
 1. Archive completed sprints (if any)
@@ -52,7 +61,7 @@ Create or update sprint with feature breakdown.
 4. Update `features.json` and `progress.md`
 5. Read [sprint-agent.md](references/sprint-agent.md) for detailed workflow
 
-### `/agent-harness code`
+### `/agent-harness-code`
 
 Start coding session for next feature.
 
@@ -62,7 +71,7 @@ Start coding session for next feature.
 3. Implement following session protocol
 4. Read [coding-agent.md](references/coding-agent.md) for protocol
 
-### `/agent-harness status`
+### `/agent-harness-status`
 
 Show current project status.
 
@@ -72,17 +81,7 @@ Show current project status.
 - Next recommended feature
 - Run `python3 scripts/status.py`
 
-### `/agent-harness init <name>`
-
-Initialize new project tracking files.
-
-**Example:** `/agent-harness init My App`
-
-**Actions:**
-- Create `features.json` and `progress.md`
-- Run `python3 scripts/init_project.py "My App"`
-
-### `/agent-harness archive`
+### `/agent-harness-archive`
 
 Archive completed sprints.
 
@@ -91,7 +90,7 @@ Archive completed sprints.
 - Move to `.agent-harness/archived/`
 - Run `python3 scripts/archive_sprint.py`
 
-### `/agent-harness force-archive`
+### `/agent-harness-force-archive`
 
 Force archive ALL sprints (including incomplete ones).
 
