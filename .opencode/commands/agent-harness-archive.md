@@ -12,4 +12,5 @@ Steps:
 1. Run `python3 <SCRIPT_PATH> --list --project-dir "$(pwd)"` to show completed sprints
 2. Ask user for confirmation
 3. Run `python3 <SCRIPT_PATH> --project-dir "$(pwd)"` to archive
-4. Confirm successful archive
+4. Commit changes: `git add -A && git commit -m "chore: archive completed sprint"`
+5. Confirm successful archive

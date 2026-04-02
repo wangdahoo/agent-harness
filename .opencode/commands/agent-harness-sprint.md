@@ -18,3 +18,4 @@ Follow the Sprint Agent workflow:
 CRITICAL: Always operate on files in the current project directory (pwd), NOT in the skill directory.
 CRITICAL: Always run `python3 scripts/validate_structure.py --project-dir "$(pwd)"` after updating features.json.
 Use `find ~ -path "*/agent-harness/scripts/validate_structure.py" -not -path "*/archived/*" 2>/dev/null | head -1` to locate the script.
+CRITICAL: After all changes, commit with: `git add features.json progress.md && git commit -m "sprint: plan sprint features"`

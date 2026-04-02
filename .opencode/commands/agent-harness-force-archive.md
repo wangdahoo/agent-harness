@@ -15,4 +15,5 @@ Steps:
 2. Show warning that ALL sprints will be archived
 3. Ask user for explicit confirmation
 4. If confirmed, run `python3 <SCRIPT_PATH> --force --project-dir "$(pwd)"`
-5. Confirm successful archive
+5. Commit changes: `git add -A && git commit -m "chore: force archive all sprints"`
+6. Confirm successful archive
