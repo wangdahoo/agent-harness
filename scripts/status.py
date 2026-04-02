@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Display current project status from features.json and progress.md."""
 
+import argparse
 import json
 from pathlib import Path
 
@@ -38,8 +39,20 @@ def format_feature_status(features):
 
 
 def main():
-    features_path = Path("features.json")
-    progress_path = Path("progress.md")
+    parser = argparse.ArgumentParser(
+        description="Display current project status"
+    )
+    parser.add_argument(
+        "--project-dir",
+        "-p",
+        default=".",
+        help="Project directory (default: current directory)"
+    )
+    args = parser.parse_args()
+    project_dir = Path(args.project_dir).resolve()
+
+    features_path = project_dir / "features.json"
+    progress_path = project_dir / "progress.md"
     
     if not features_path.exists():
         print("❌ features.json not found. Run init-project.py first.")

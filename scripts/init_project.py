@@ -58,12 +58,18 @@ def main():
         "--output-dir",
         "-o",
         default=".",
-        help="Output directory (default: current directory)"
+        help="Output directory (default: current directory). Alias: --project-dir"
+    )
+    parser.add_argument(
+        "--project-dir",
+        "-p",
+        default=None,
+        help="Project directory (default: current directory). Alias for --output-dir"
     )
     
     args = parser.parse_args()
     
-    output_dir = Path(args.output_dir).resolve()
+    output_dir = Path(args.project_dir or args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     
     project_description = args.description or f"{args.project_name} project"

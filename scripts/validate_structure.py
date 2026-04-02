@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate features.json structure and schema."""
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -97,7 +98,19 @@ def validate_features_json(filepath: Path) -> List[str]:
 
 
 def main():
-    features_path = Path("features.json")
+    parser = argparse.ArgumentParser(
+        description="Validate features.json structure and schema"
+    )
+    parser.add_argument(
+        "--project-dir",
+        "-p",
+        default=".",
+        help="Project directory (default: current directory)"
+    )
+    args = parser.parse_args()
+    project_dir = Path(args.project_dir).resolve()
+
+    features_path = project_dir / "features.json"
     
     print("=== Validating features.json ===\n")
     

@@ -153,11 +153,13 @@ Loop: Sprint Agent → Coding Agent → Coding Agent → ... → Sprint Agent
 
 ## Scripts
 
+All scripts support `--project-dir` / `-p` to specify the project directory. When using slash commands, `--project-dir "$(pwd)"` is passed automatically.
+
 ```bash
-python3 scripts/init_project.py <name> [-d desc] [-o dir]  # Initialize tracking
-python3 scripts/status.py                                  # Show status
-python3 scripts/validate_structure.py                      # Validate features.json
-python3 scripts/archive_sprint.py [--list|--dry-run]       # Archive completed sprints
+python3 scripts/init_project.py <name> [-d desc] [-p dir]     # Initialize tracking
+python3 scripts/status.py [-p dir]                             # Show status
+python3 scripts/validate_structure.py [-p dir]                 # Validate features.json
+python3 scripts/archive_sprint.py [-p dir] [--list|--dry-run]  # Archive completed sprints
 ```
 
 ## Critical Rules
