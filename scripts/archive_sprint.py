@@ -109,42 +109,50 @@ def remove_archived_sprint(features_data: Dict, sprint_id: str) -> Dict:
     return features_data
 
 
-def update_progress_md(progress_path: Path, archived_sprint: Dict, force: bool = False):
-    """Add archive entry to progress.md."""
-    timestamp = datetime.now().strftime("%Y-%m-%d")
-    
-    action_type = "Force Archive" if force else "Sprint Archived"
-    reason = "Force archive requested - all sprints archived regardless of status." if force else "Sprint completed and archived to make room for new sprint."
-    
-    archive_entry = f"""## Session - {timestamp}
-**Agent**: Archive Script
-**Action**: {action_type}
+def get_progress_template() -> str:
+    """Return the default progress.md template."""
+    return """# Project Progress Log
 
-### Archived Sprint
-- Sprint ID: {archived_sprint.get('id', 'unknown')}
-- Sprint Name: {archived_sprint.get('name', 'unknown')}
-- Location: {ARCHIVED_DIR}/{archived_sprint.get('id', 'unknown')}_{archived_sprint.get('name', 'unknown').replace(' ', '_').lower()}/
-
-### Reason
-{reason}
+This file tracks the progress of all agent sessions. Each session should add an entry at the top.
 
 ---
 
+## Session Template
+
+```markdown
+## Session N - YYYY-MM-DD
+**Agent**: Sprint | Coding
+**Sprint**: [Sprint ID if applicable]
+**Feature**: [Feature ID if applicable]
+
+### Work Completed
+- [What was implemented or done]
+
+### Tests Performed
+- [How changes were verified]
+
+### Issues Encountered
+- [Any blockers, bugs, or challenges]
+
+### Decisions Made
+- [Architectural or design choices]
+
+### Next Steps
+- [Recommended next actions]
+```
+
+---
+
+## Sessions
+
+<!-- New sessions should be added above this line -->
 """
-    
-    if progress_path.exists():
-        with open(progress_path, 'r') as f:
-            content = f.read()
-        
-        sessions_marker = "## Sessions"
-        if sessions_marker in content:
-            parts = content.split(sessions_marker, 1)
-            new_content = parts[0] + sessions_marker + "\n\n" + archive_entry + parts[1]
-        else:
-            new_content = content + "\n\n" + archive_entry
-        
-        with open(progress_path, 'w') as f:
-            f.write(new_content)
+
+
+def reset_progress_md(progress_path: Path):
+    """Reset progress.md to the default template."""
+    with open(progress_path, 'w') as f:
+        f.write(get_progress_template())
 
 
 def archive_completed_sprints(project_dir: Path, dry_run: bool = False, force: bool = False) -> List[Dict]:
@@ -221,8 +229,8 @@ def archive_completed_sprints(project_dir: Path, dry_run: bool = False, force: b
         print(f"\nUpdated features.json - removed {len(archived_info)} archived sprint(s)")
         
         if sprints_to_archive:
-            update_progress_md(progress_path, sprints_to_archive[0], force=force)
-            print("Updated progress.md with archive entry")
+            reset_progress_md(progress_path)
+            print("Reset progress.md to default template")
     
     return archived_info
 
