@@ -79,34 +79,46 @@ def package_skill(dry_run=False):
     
     patterns = parse_skillignore(REPO_ROOT)
     
+    # Collect files to include
+    included_files = []
+    excluded_count = 0
+
+    for file_path in REPO_ROOT.rglob('*'):
+        if file_path.is_file():
+            rel_path = file_path.relative_to(REPO_ROOT)
+            if should_ignore(rel_path, patterns):
+                excluded_count += 1
+                continue
+            included_files.append(SKILL_NAME / rel_path)
+
     if dry_run:
         print(f"[DRY-RUN] Would package to: {skill_file}")
         print(f"[DRY-RUN] Ignore patterns from .skillignore:")
         for p in patterns:
             print(f"  - {p}")
+        print(f"\n[DRY-RUN] Files to include:")
+        print("-" * 50)
+        for f in sorted(included_files):
+            print(f"  {f}")
+        print("-" * 50)
+        print(f"[DRY-RUN] Total: {len(included_files)} files (excluded: {excluded_count})")
         return skill_file
     
     print("Packaging skill...")
-    
-    included_count = 0
-    excluded_count = 0
-    
+
     try:
         with zipfile.ZipFile(skill_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for file_path in REPO_ROOT.rglob('*'):
-                if file_path.is_file():
-                    rel_path = file_path.relative_to(REPO_ROOT)
-                    
-                    if should_ignore(rel_path, patterns):
-                        excluded_count += 1
-                        continue
-                    
-                    arcname = SKILL_NAME / rel_path
-                    zipf.write(file_path, arcname)
-                    print(f"  Added: {arcname}")
-                    included_count += 1
-        
-        print(f"\nPackaged {included_count} files (excluded: {excluded_count})")
+            for arcname in included_files:
+                file_path = REPO_ROOT / arcname.relative_to(SKILL_NAME)
+                zipf.write(file_path, arcname)
+
+        # Print all included files
+        print(f"\nFiles included in {skill_file.name}:")
+        print("-" * 50)
+        for f in sorted(included_files):
+            print(f"  {f}")
+        print("-" * 50)
+        print(f"Total: {len(included_files)} files (excluded: {excluded_count})")
         print(f"Output: {skill_file}")
         return skill_file
     
