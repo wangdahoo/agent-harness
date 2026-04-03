@@ -7,11 +7,13 @@ Usage:
 
 Examples:
     python3 scripts/release.py v1.0.0
+    python3 scripts/release.py 0.4.0-beta.2
     python3 scripts/release.py v1.0.0 --dry-run
 """
 
 import argparse
 import fnmatch
+import re
 import subprocess
 import sys
 import zipfile
@@ -34,12 +36,26 @@ def run_cmd(cmd, cwd=None, check=True):
 
 
 def validate_version(version):
-    """Validate version format (e.g., v1.0.0 or 1.0.0)."""
+    """
+    Validate version format using semantic versioning (semver).
+
+    Supports:
+    - v1.0.0 or 1.0.0 (basic)
+    - v0.4.0-beta.2 or 0.4.0-beta.2 (pre-release)
+    - v1.0.0+build.1 or 1.0.0+build.1 (build metadata)
+
+    See: https://semver.org/
+    """
+    # Remove optional 'v' prefix
     if version.startswith("v"):
         version = version[1:]
-    parts = version.split(".")
-    if len(parts) != 3 or not all(p.isdigit() for p in parts):
+
+    # SemVer regex: MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
+    pattern = r'^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*))?(?:\+([a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*))?$'
+
+    if not re.match(pattern, version):
         return False, None
+
     return True, f"v{version}"
 
 
@@ -158,14 +174,14 @@ def create_release(version, skill_file, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Release skill to GitHub")
-    parser.add_argument("version", help="Version (e.g., v1.0.0 or 1.0.0)")
+    parser.add_argument("version", help="Version (e.g., v1.0.0, 0.4.0-beta.2)")
     parser.add_argument("--dry-run", action="store_true", help="Preview without executing")
     args = parser.parse_args()
     
     valid, version = validate_version(args.version)
     if not valid:
         print(f"Error: Invalid version format: {args.version}")
-        print("   Expected format: v1.0.0 or 1.0.0")
+        print("   Expected format: v1.0.0, 0.4.0-beta.2, 1.0.0+build.1")
         sys.exit(1)
     
     print(f"Preparing release: {version}\n")
