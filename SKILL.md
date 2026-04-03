@@ -1,7 +1,7 @@
 ---
 name: agent-harness
-description: "Framework for long-running AI agents across multiple context windows. USE WHEN user types /agent-harness or mentions sprint planning, feature breakdown, multi-session projects. Subcommands: init, sprint, code, status, archive, force-archive."
-argument-hint: init|sprint|code|status|archive|force-archive [args...]
+description: "Framework for long-running AI agents across multiple context windows. USE WHEN user types /agent-harness or mentions sprint planning, feature breakdown, multi-session projects. Subcommands: init, sprint, code, 996, status, archive, force-archive."
+argument-hint: init|sprint|code|996|status|archive|force-archive [args...]
 user-invocable: true
 ---
 
@@ -16,6 +16,7 @@ When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow
 | `init <name>` | Run `python3 scripts/init_project.py "<name>" --project-dir "$(pwd)"` |
 | `sprint [req]` | Execute Sprint Agent workflow (see references/sprint-agent.md) |
 | `code` | Execute Coding Agent workflow (see references/coding-agent.md) |
+| `996` | Execute 996 parallel orchestration (see references/996-agent.md) |
 | `status` | Run `python3 scripts/status.py --project-dir "$(pwd)"` |
 | `archive` | Run archive workflow |
 | `force-archive` | Run force archive workflow |
@@ -25,6 +26,7 @@ When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow
 - `/agent-harness init "My Project"` - Initialize new project
 - `/agent-harness sprint "Add authentication"` - Plan sprint
 - `/agent-harness code` - Start coding session
+- `/agent-harness 996` - Execute parallel coding with subagent orchestration
 - `/agent-harness status` - Show status
 
 CRITICAL: Always operate on files in the current project directory (`pwd`), NOT in the skill directory.
@@ -37,6 +39,7 @@ Agent Harness enables Claude to manage long-running projects by:
 
 - **Sprint Agent**: Plans features and breaks down requirements
 - **Coding Agent**: Implements features one at a time
+- **996 Agent**: Orchestrates parallel feature implementation with subagents
 - **Progress Tracking**: Maintains context across sessions
 - **Quality Gates**: Ensures working code at each step
 
@@ -54,6 +57,7 @@ Agent Harness Commands:
   /agent-harness-init <name>   - Initialize new project tracking files
   /agent-harness-sprint [req]  - Create or update sprint with feature breakdown
   /agent-harness-code          - Start coding session for next feature
+  /agent-harness-996           - Execute parallel coding with subagent orchestration
   /agent-harness-status        - Show current project status
   /agent-harness-archive       - Archive completed sprints
   /agent-harness-force-archive - Force archive ALL sprints (including incomplete)
@@ -94,6 +98,23 @@ Start coding session for next feature.
 2. Select next pending feature
 3. Implement following session protocol
 4. Read [coding-agent.md](references/coding-agent.md) for protocol
+
+### `/agent-harness-996`
+
+Execute parallel coding tasks with subagent orchestration.
+
+**Examples:**
+- `/agent-harness-996` - Run parallel orchestration with default settings
+- `/agent-harness-996 --max-parallel=3` - Limit to 3 concurrent subagents
+
+**Actions:**
+1. Check for uncompleted sprint
+2. Analyze dependencies and file conflicts
+3. Dispatch subagents for parallel execution
+4. Verify results and update tracking files
+5. Read [996-agent.md](references/996-agent.md) for protocol
+
+**Use when:** You want to accelerate sprint completion by running multiple coding tasks in parallel.
 
 ### `/agent-harness-status`
 
@@ -200,6 +221,7 @@ python3 scripts/archive_sprint.py [-p dir] [--list|--dry-run]  # Archive complet
 **By Agent Role:**
 - **[sprint-agent.md](references/sprint-agent.md)** - Sprint Agent: workflow, feature breakdown, schemas
 - **[coding-agent.md](references/coding-agent.md)** - Coding Agent: session protocol, testing, schemas
+- **[996-agent.md](references/996-agent.md)** - 996 Agent: parallel orchestration, subagent dispatch, conflict detection
 
 **Complete Examples:**
 - **[examples.md](references/examples.md)** - Realistic examples of features.json, progress.md, and workflows

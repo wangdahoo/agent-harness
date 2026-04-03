@@ -12,6 +12,7 @@ Show the following help message:
 | `/agent-harness-init <name>` | Initialize new project tracking files |
 | `/agent-harness-sprint [req]` | Create or update sprint with feature breakdown |
 | `/agent-harness-code` | Start coding session for next feature |
+| `/agent-harness-996` | Execute parallel coding with subagent orchestration |
 | `/agent-harness-status` | Show current project status |
 | `/agent-harness-archive` | Archive completed sprints |
 | `/agent-harness-force-archive` | Force archive ALL sprints (including incomplete) |
