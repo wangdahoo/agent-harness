@@ -1,5 +1,6 @@
 # Development files - not part of the skill
 AGENTS.md
+CLAUDE.md
 README.md
 .git/
 scripts/release.py
@@ -20,3 +21,6 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+.gitignore
+.skillignore
