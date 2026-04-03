@@ -1,9 +1,33 @@
 ---
 name: agent-harness
-description: "Framework for long-running AI agents that work across multiple context windows. Use when Claude needs to execute complex, multi-session projects that require: (1) Breaking down large requirements into manageable features, (2) Tracking progress across multiple sessions, (3) Maintaining context between context window resets, (4) Coordinating Sprint (planning) and Coding (implementation) agents, (5) Managing feature dependencies and prioritization, (6) Ensuring code quality and working state at each session end. Commands: /agent-harness, /agent-harness-init, /agent-harness-sprint, /agent-harness-code, /agent-harness-status, /agent-harness-archive, /agent-harness-force-archive. Based on Anthropic's research on effective harnesses for long-running agents."
+description: "Framework for long-running AI agents across multiple context windows. USE WHEN user types /agent-harness or mentions sprint planning, feature breakdown, multi-session projects. Subcommands: init, sprint, code, status, archive, force-archive."
+argument-hint: init|sprint|code|status|archive|force-archive [args...]
+user-invocable: true
 ---
 
 # Agent Harness
+
+## Subcommand Routing
+
+When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow:
+
+| Subcommand | Action |
+|------------|--------|
+| `init <name>` | Run `python3 scripts/init_project.py "<name>" --project-dir "$(pwd)"` |
+| `sprint [req]` | Execute Sprint Agent workflow (see references/sprint-agent.md) |
+| `code` | Execute Coding Agent workflow (see references/coding-agent.md) |
+| `status` | Run `python3 scripts/status.py --project-dir "$(pwd)"` |
+| `archive` | Run archive workflow |
+| `force-archive` | Run force archive workflow |
+| `help` or empty | Show available commands |
+
+**Usage examples:**
+- `/agent-harness init "My Project"` - Initialize new project
+- `/agent-harness sprint "Add authentication"` - Plan sprint
+- `/agent-harness code` - Start coding session
+- `/agent-harness status` - Show status
+
+CRITICAL: Always operate on files in the current project directory (`pwd`), NOT in the skill directory.
 
 Framework for executing complex, multi-session projects using Sprint-Coding agent cycles.
 
