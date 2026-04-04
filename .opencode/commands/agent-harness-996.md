@@ -22,7 +22,10 @@ Follow the 996 Agent workflow:
    - Build dependency graph to identify ready features
    - Detect file conflicts using files_affected field
    - Create execution batches respecting max parallelism
-5. Dispatch subagents for parallel execution (see references/996-agent.md for protocol)
+5. Dispatch subagents for parallel execution:
+   - Each subagent MUST receive the CONTEXT RESET header in its prompt
+   - Ensure subagents start with clean context, no assumptions from prior work
+   - See references/996-agent.md for full prompt template with context isolation
 6. Verify results and handle failures (mark blocked, continue others)
 7. Update features.json with all feature status changes
 8. Write progress.md entry summarizing orchestration results

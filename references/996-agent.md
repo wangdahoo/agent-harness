@@ -154,6 +154,13 @@ For each feature, spawn a subagent with this prompt structure:
 ```
 Implement ONE feature for this project.
 
+## CONTEXT RESET - READ THIS FIRST
+This is an isolated task. You MUST:
+1. DISREGARD any context from previous conversations or tasks
+2. NOT assume any prior knowledge about the project state
+3. Read all necessary files fresh to understand current state
+4. Start with a clean mental state - this is your ONLY task
+
 ## Feature Details
 - **ID**: <feature_id>
 - **Title**: <title>
@@ -428,3 +435,4 @@ If multiple features fail and codebase is in bad state:
 4. **Orchestrator Updates State** - Subagents don't modify features.json or progress.md
 5. **Clean State Required** - Only run 996 on clean working tree
 6. **Verify Each Feature** - Run lint/build after each batch
+7. **Context Isolation** - Every subagent MUST receive CONTEXT RESET header to ensure clean mental state
