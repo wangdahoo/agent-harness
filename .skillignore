@@ -3,6 +3,7 @@ AGENTS.md
 CLAUDE.md
 README.md
 .git/
+.claude/
 scripts/release.py
 dist/
 
