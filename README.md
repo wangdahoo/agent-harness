@@ -5,10 +5,11 @@
 ## 核心特性
 
 - **跨上下文持续** - 通过结构化文件在上下文重置后保持项目状态
-- **双 Agent 协作** - Sprint Agent 规划，Coding Agent 实现
+- **多 Agent 协作** - Sprint Agent 规划，Coding Agent 实现，996 Agent 并行执行
 - **进度可追溯** - 每个会话的详细日志和功能状态跟踪
 - **质量保证** - 每个会话结束时代码必须可工作
 - **依赖管理** - 自动处理功能依赖关系和实现顺序
+- **并行执行** - 996 模式支持多任务并行处理
 - **斜杠命令** - 支持简洁的命令快速访问核心功能
 
 ## 安装
@@ -114,6 +115,8 @@ Coding Agent 会：
 | `/agent-harness-init <name>` | 初始化新项目 | `/agent-harness-init Task Manager` |
 | `/agent-harness-sprint [req]` | 创建或更新 Sprint | `/agent-harness-sprint 添加用户仪表板` |
 | `/agent-harness-code` | 开始编码会话 | `/agent-harness-code` |
+| `/agent-harness-996` | 并行执行多个功能 | `/agent-harness-996` |
+| `/agent-harness-996 --max-parallel=3` | 限制并发数 | `/agent-harness-996 --max-parallel=3` |
 | `/agent-harness-status` | 查看项目状态 | `/agent-harness-status` |
 | `/agent-harness-archive` | 归档完成的 Sprint | `/agent-harness-archive` |
 | `/agent-harness-force-archive` | 强制归档所有 Sprint | `/agent-harness-force-archive` |
@@ -126,6 +129,8 @@ Coding Agent 会：
 | `/agent-harness init <name>` | 初始化新项目 | `/agent-harness init Task Manager` |
 | `/agent-harness sprint [req]` | 创建或更新 Sprint | `/agent-harness sprint 添加用户仪表板` |
 | `/agent-harness code` | 开始编码会话 | `/agent-harness code` |
+| `/agent-harness 996` | 并行执行多个功能 | `/agent-harness 996` |
+| `/agent-harness 996 --max-parallel=3` | 限制并发数 | `/agent-harness 996 --max-parallel=3` |
 | `/agent-harness status` | 查看项目状态 | `/agent-harness status` |
 | `/agent-harness archive` | 归档完成的 Sprint | `/agent-harness archive` |
 | `/agent-harness force-archive` | 强制归档所有 Sprint | `/agent-harness force-archive` |
@@ -171,6 +176,44 @@ Coding Agent 会：
 3. 确保无错误
 4. 提交更改
 
+### 996 Agent（并行执行）
+
+**触发时机：**
+- 需要加速 Sprint 完成
+- 多个独立功能可并行实现
+
+**工作流程：**
+
+**预检阶段：**
+1. 确认项目目录
+2. 检查未完成的 Sprint
+3. 确保工作树干净（无未提交更改）
+
+**分析阶段：**
+1. 构建依赖图，识别就绪的功能
+2. 检测文件冲突（使用 `files_affected` 字段）
+3. 创建执行批次（最大并发 5 个）
+
+**调度阶段：**
+1. 为每个功能生成子 Agent 提示
+2. 并行调度子 Agent（无文件冲突的功能）
+3. 上下文隔离：每个子 Agent 从全新状态开始
+
+**验证阶段：**
+1. 检查完成信号
+2. 运行 lint/build 验证
+3. 记录结果
+
+**状态更新阶段：**
+1. 更新 `features.json` 中的功能状态
+2. 写入 `progress.md` 编排摘要
+3. 提交更改
+
+**关键约束：**
+- 最大 3-5 个并发子 Agent
+- 有文件冲突的功能顺序执行
+- 失败的功能标记为 `blocked`，其他继续
+
 ## 工作流程
 
 ```
@@ -183,20 +226,29 @@ Coding Agent 会：
          ↓
    features.json   ← 功能定义和状态
          │
-         ↓
-┌─────────────────┐
-│  Coding Agent   │ ← 实现一个功能
-└────────┬────────┘
-         │
-         ↓
-   可工作的代码
-         │
-         ├─→ 更新 progress.md
-         ├─→ 更新 features.json
-         └─→ 提交更改
-         
+         ├────────────────────────┐
+         │                        │
+         ↓                        ↓
+┌─────────────────┐      ┌─────────────────┐
+│  Coding Agent   │      │   996 Agent     │ ← 并行执行
+│  (串行模式)      │      │  (并行模式)      │
+└────────┬────────┘      └────────┬────────┘
+         │                        │
+         └──────────┬─────────────┘
+                    │
+                    ↓
+              可工作的代码
+                    │
+                    ├─→ 更新 progress.md
+                    ├─→ 更新 features.json
+                    └─→ 提交更改
+
     (循环直到 Sprint 完成)
 ```
+
+**模式选择：**
+- **串行模式** (`/agent-harness-code`)：一次实现一个功能，适合复杂功能
+- **并行模式** (`/agent-harness-996`)：并行实现多个独立功能，加速 Sprint 完成
 
 ## 文件结构
 
@@ -331,6 +383,23 @@ python3 scripts/archive_sprint.py [--list] [--dry-run] [--force]
 
 归档后的 Sprint 移动到 `.agent-harness/archived/` 目录。
 
+### release.py
+
+打包并发布 Skill 到 GitHub Releases。
+
+```bash
+python3 scripts/release.py <version> [--dry-run]
+```
+
+**选项：**
+- `version` - 版本号（支持 semver，如 `v1.0.0`、`0.4.0-beta.2`、`1.0.0+build.1`）
+- `--dry-run` - 预览操作而不执行
+
+**功能：**
+- 自动打包 Skill 文件（遵循 `.skillignore` 规则）
+- 创建 Git 标签并推送
+- 使用 `gh release create` 创建 GitHub Release 并上传
+
 ## 设计原理
 
 ### 为什么需要 Agent Harness？
@@ -343,7 +412,7 @@ python3 scripts/archive_sprint.py [--list] [--dry-run] [--force]
 
 **解决方案：**
 1. **结构化文件** - 用 `features.json` 和 `progress.md` 持久化项目状态
-2. **双 Agent 模式** - Sprint Agent 专注规划，Coding Agent 专注实现
+2. **多 Agent 模式** - Sprint Agent 专注规划，Coding Agent 专注实现，996 Agent 并行加速
 3. **单功能会话** - 每个会话只实现一个功能，确保质量和焦点
 4. **强制协议** - 开始和结束会话的固定流程，确保一致性
 
@@ -356,6 +425,7 @@ Agent Harness 使用三级加载系统：
 3. **References** - 按需加载
    - Sprint Agent 加载 `sprint-agent.md`
    - Coding Agent 加载 `coding-agent.md`
+   - 996 Agent 加载 `996-agent.md`
    - 示例按需从 `examples.md` 加载
 
 这确保了每个 Agent 只看到相关内容，最小化上下文占用。
@@ -376,8 +446,25 @@ Coding Agent (会话 N)  →  实现功能 N
 Sprint Agent        →  创建下一个 Sprint 或归档
 ```
 
+**或使用 996 并行模式加速：**
+
+```
+Sprint Agent        →  创建/更新 Sprint
+    ↓
+features.json       →  功能定义和状态
+    ↓
+996 Agent           →  分析依赖和文件冲突
+    ↓
+子 Agent 批次 1     →  并行实现功能 1, 2, 3
+    ↓
+子 Agent 批次 2     →  并行实现功能 4, 5
+    ↓
+Sprint Agent        →  创建下一个 Sprint 或归档
+```
+
 这个循环确保：
-- 每次只处理一个功能，降低复杂度
+- 每次只处理一个功能，降低复杂度（串行模式）
+- 或并行处理多个独立功能，加速完成（996 模式）
 - 每个会话都留下可工作的代码
 - 进度可追溯，决策有记录
 
@@ -503,35 +590,13 @@ Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
 
 ### 场景 5：强制归档所有 Sprint
 
-当你需要重置项目或清理所有 Sprint 时：
-
-**OpenCode:**
-```
-用户: /agent-harness-force-archive
-Claude: [列出所有 3 个 Sprint，包括未完成的]
-用户: 确认强制归档
-Claude: [归档所有 Sprint 到 .agent-harness/archived/ → 清空 features.json 的 sprints]
-```
-
-**Claude Code:**
-```
-用户: /agent-harness force-archive
-Claude: [列出所有 3 个 Sprint，包括未完成的]
-用户: 确认强制归档
-Claude: [归档所有 Sprint 到 .agent-harness/archived/ → 清空 features.json 的 sprints]
-```
-
-**注意：** 这将归档所有 Sprint，不管它们的状态如何（包括 in_progress、planning、blocked 等）。
-
-### 场景 6：强制归档所有 Sprint
-
-当你需要清空当前项目状态，开始全新的规划时使用。
+当你需要重置项目、清理所有 Sprint 或重新规划时使用。
 
 **OpenCode:**
 ```
 用户: /agent-harness-force-archive
 Claude: [警告：将归档所有 Sprint，包括未完成的]
-用户: 确认，我要开始新项目
+用户: 确认强制归档
 Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 project 信息]
 ```
 
@@ -539,7 +604,7 @@ Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 
 ```
 用户: /agent-harness force-archive
 Claude: [警告：将归档所有 Sprint，包括未完成的]
-用户: 确认，我要开始新项目
+用户: 确认强制归档
 Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 project 信息]
 ```
 
@@ -548,7 +613,41 @@ Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 
 - 需要重新规划整个项目
 - 清理旧的无用 Sprint
 
-**注意：** 归档的数据不会丢失，都保存在 `.agent-harness/archived/` 中。
+**注意：** 这将归档所有 Sprint，不管它们的状态如何（包括 in_progress、planning、blocked 等）。归档的数据不会丢失，都保存在 `.agent-harness/archived/` 中。
+
+### 场景 6：并行执行多个功能（996 模式）
+
+当你有多个独立功能需要快速完成时：
+
+**OpenCode:**
+```
+用户: /agent-harness-996
+Claude: [分析依赖和文件冲突 → 创建执行批次]
+       批次 1 (并行): s1-feat-002, s1-feat-003, s1-feat-004
+       批次 2 (并行): s1-feat-005, s1-feat-006
+用户: [确认执行]
+Claude: [调度子 Agent → 并行执行 → 验证结果 → 更新状态]
+```
+
+**Claude Code:**
+```
+用户: /agent-harness 996
+Claude: [分析依赖和文件冲突 → 创建执行批次]
+       批次 1 (并行): s1-feat-002, s1-feat-003, s1-feat-004
+       批次 2 (并行): s1-feat-005, s1-feat-006
+用户: [确认执行]
+Claude: [调度子 Agent → 并行执行 → 验证结果 → 更新状态]
+```
+
+**适用场景：**
+- 多个独立功能（无依赖关系）
+- 功能修改不同文件（无文件冲突）
+- 需要加速 Sprint 完成
+
+**限制：**
+- 最大并发 5 个子 Agent
+- 有文件冲突的功能会顺序执行
+- 需要干净的工作树
 
 ## 故障排除
 
@@ -586,6 +685,7 @@ Sprint Agent 和 Coding Agent 会自动验证 `features.json` 结构。如果需
 - **[SKILL.md](SKILL.md)** - Skill 定义和命令
 - **[references/sprint-agent.md](references/sprint-agent.md)** - Sprint Agent 工作流程和模式
 - **[references/coding-agent.md](references/coding-agent.md)** - Coding Agent 会话协议
+- **[references/996-agent.md](references/996-agent.md)** - 996 Agent 并行编排协议
 - **[references/examples.md](references/examples.md)** - 完整的示例
 
 ## 技术要求

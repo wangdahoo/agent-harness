@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Agent Harness is a Claude skill for managing long-running AI projects across multiple context windows. It uses a Sprint-Coding agent cycle: Sprint Agent plans features, Coding Agent implements them one at a time.
+Agent Harness is a Claude skill for managing long-running AI projects across multiple context windows. Three agent roles collaborate: Sprint Agent plans features, Coding Agent implements them one at a time, 996 Agent runs multiple features in parallel via subagents.
+
+Supports two CLI formats: **OpenCode** (`/agent-harness-init`) and **Claude Code** (`/agent-harness init`). Command definitions live in `.opencode/commands/`.
 
 ## Commands
 
@@ -15,6 +17,9 @@ python3 scripts/status.py                                   # Show project statu
 python3 scripts/validate_structure.py                       # Validate features.json
 python3 scripts/archive_sprint.py [--list|--dry-run|--force]  # Archive sprints
 
+# Release/packaging (supports semver: v1.0.0, 0.4.0-beta.2)
+python3 scripts/release.py <version> [--dry-run]            # Package & publish to GitHub Releases
+
 # Python linting
 python3 -m py_compile scripts/*.py                          # Syntax check all scripts
 ```
@@ -24,17 +29,21 @@ python3 -m py_compile scripts/*.py                          # Syntax check all s
 ### Core Files
 - `features.json` - Sprint and feature tracking (Sprint Agent creates, Coding Agent updates status)
 - `progress.md` - Session log (prepend new entries)
-- `SKILL.md` - Skill definition with slash commands
+- `SKILL.md` - Skill definition with subcommand routing and slash commands
 - `references/sprint-agent.md` - Sprint Agent workflow
 - `references/coding-agent.md` - Coding Agent session protocol
+- `references/996-agent.md` - 996 Agent parallel orchestration protocol
 
-### Slash Commands (.opencode/commands/)
-Commands like `/agent-harness-init`, `/agent-harness-sprint`, `/agent-harness-code` are defined here. They trigger agent workflows defined in SKILL.md and references/.
-
-### Sprint-Coding Cycle
+### Agent Cycle
 1. **Sprint Agent** - Analyzes requirements, breaks into atomic features with acceptance criteria, orders by dependencies
 2. **Coding Agent** - Implements ONE feature per session, tests, updates tracking files, commits
-3. **Loop** until sprint complete, then archive and plan next
+3. **996 Agent** - Analyzes dependency graph and file conflicts, dispatches subagents in parallel batches (max 5), verifies results
+4. **Loop** until sprint complete, then archive and plan next
+
+### Templates and Packaging
+- `assets/` - Templates for `features.json`, `progress.md`, `AGENTS.md` used by `init_project.py`
+- `.skillignore` - Exclude patterns for skill packaging (like `.gitignore` for `.skill` zip)
+- `release.py` packages into `dist/agent-harness.skill` respecting `.skillignore`, creates git tag + GitHub Release
 
 ## Status Values
 
