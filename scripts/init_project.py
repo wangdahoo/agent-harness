@@ -12,20 +12,20 @@ from pathlib import Path
 def create_features_json(project_name: str, project_description: str, output_dir: Path):
     """Create features.json from template."""
     template_path = Path(__file__).parent.parent / "assets" / "features.json"
-    
+
     if template_path.exists():
-        with open(template_path, 'r') as f:
+        with open(template_path, "r", encoding="utf-8") as f:
             features_data = json.load(f)
-        
+
         features_data["project"]["name"] = project_name
         features_data["project"]["description"] = project_description
         features_data["project"]["created_at"] = datetime.now().strftime("%Y-%m-%d")
         features_data["metadata"]["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-        
+
         output_file = output_dir / "features.json"
-        with open(output_file, 'w') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(features_data, f, indent=2)
-        
+
         return output_file
     else:
         raise FileNotFoundError(f"Template not found: {template_path}")
@@ -34,7 +34,7 @@ def create_features_json(project_name: str, project_description: str, output_dir
 def create_progress_md(output_dir: Path):
     """Create progress.md from template."""
     template_path = Path(__file__).parent.parent / "assets" / "progress.md"
-    
+
     if template_path.exists():
         output_file = output_dir / "progress.md"
         shutil.copy(template_path, output_file)
@@ -49,54 +49,49 @@ def main():
     )
     parser.add_argument("project_name", help="Name of the project")
     parser.add_argument(
-        "--description", 
-        "-d",
-        default="",
-        help="Project description (optional)"
+        "--description", "-d", default="", help="Project description (optional)"
     )
     parser.add_argument(
         "--output-dir",
         "-o",
         default=".",
-        help="Output directory (default: current directory). Alias: --project-dir"
+        help="Output directory (default: current directory). Alias: --project-dir",
     )
     parser.add_argument(
         "--project-dir",
         "-p",
         default=None,
-        help="Project directory (default: current directory). Alias for --output-dir"
+        help="Project directory (default: current directory). Alias for --output-dir",
     )
-    
+
     args = parser.parse_args()
-    
+
     output_dir = Path(args.project_dir or args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     project_description = args.description or f"{args.project_name} project"
-    
+
     print(f"=== Initializing Agent Harness ===")
     print(f"Project: {args.project_name}")
     print(f"Output: {output_dir}")
     print()
-    
+
     try:
         features_file = create_features_json(
-            args.project_name, 
-            project_description,
-            output_dir
+            args.project_name, project_description, output_dir
         )
         print(f"✓ Created {features_file.name}")
-        
+
         progress_file = create_progress_md(output_dir)
         print(f"✓ Created {progress_file.name}")
-        
+
         print()
         print("Next: Run Sprint Agent to define features.")
-        
+
     except Exception as e:
         print(f"Error: {e}")
         return 1
-    
+
     return 0
 
 
