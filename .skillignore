@@ -25,3 +25,9 @@ Thumbs.db
 
 .gitignore
 .skillignore
+
+node_modules/
+package.json
+bun.lock
+
+.ruff_cache/*
