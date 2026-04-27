@@ -216,7 +216,7 @@ python3 scripts/validate_structure.py [-p dir]                 # Validate featur
 python3 scripts/archive_sprint.py [-p dir] [--list|--dry-run]  # Archive completed sprints
 ```
 
-CRITICAL: Always prefix with `PYTHONIOENCODING=utf-8` when running scripts (required for Windows GBK compatibility).
+CRITICAL: Always prefix with `$env:PYTHONIOENCODING="utf-8";` when running scripts (required for Windows GBK compatibility).
 
 ## Critical Rules
 
