@@ -31,6 +31,28 @@ def create_features_json(project_name: str, project_description: str, output_dir
         raise FileNotFoundError(f"Template not found: {template_path}")
 
 
+def ensure_gitignore(output_dir: Path):
+    """Add .agent-harness to .gitignore if not already present."""
+    gitignore_path = output_dir / ".gitignore"
+    entry = ".agent-harness"
+
+    if gitignore_path.exists():
+        with open(gitignore_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        lines = [line.strip() for line in content.splitlines()]
+        if entry in lines:
+            return gitignore_path, False
+        with open(gitignore_path, "a", encoding="utf-8") as f:
+            if content and not content.endswith("\n"):
+                f.write("\n")
+            f.write(f"{entry}\n")
+        return gitignore_path, True
+    else:
+        with open(gitignore_path, "w", encoding="utf-8") as f:
+            f.write(f"{entry}\n")
+        return gitignore_path, True
+
+
 def create_progress_md(output_dir: Path):
     """Create progress.md from template."""
     template_path = Path(__file__).parent.parent / "assets" / "progress.md"
@@ -84,6 +106,12 @@ def main():
 
         progress_file = create_progress_md(output_dir)
         print(f"✓ Created {progress_file.name}")
+
+        gitignore_file, updated = ensure_gitignore(output_dir)
+        if updated:
+            print(f"✓ Updated {gitignore_file.name} (added .agent-harness)")
+        else:
+            print(f"  {gitignore_file.name} already contains .agent-harness")
 
         print()
         print("Next: Run Sprint Agent to define features.")
