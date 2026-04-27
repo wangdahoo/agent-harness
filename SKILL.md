@@ -29,7 +29,7 @@ When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow
 - `/agent-harness 996` - Execute parallel coding with subagent orchestration
 - `/agent-harness status` - Show status
 
-CRITICAL: Always operate on files in the current project directory (`pwd`), NOT in the skill directory.
+CRITICAL: Always operate on files in the current project directory, NOT in the skill directory. At the start of every workflow, run `python3 scripts/resolve_project_dir.py` to get the correct absolute path. Use this path for ALL reads/writes of `features.json` and `progress.md`.
 
 Framework for executing complex, multi-session projects using Sprint-Coding agent cycles.
 
@@ -206,6 +206,7 @@ Loop: Sprint Agent → Coding Agent → Coding Agent → ... → Sprint Agent
 All scripts support `--project-dir` / `-p` to specify the project directory. When using slash commands, `--project-dir "$(pwd)"` is passed automatically.
 
 ```bash
+python3 scripts/resolve_project_dir.py [-s dir]                # Resolve project directory
 python3 scripts/init_project.py <name> [-d desc] [-p dir]     # Initialize tracking
 python3 scripts/status.py [-p dir]                             # Show status
 python3 scripts/validate_structure.py [-p dir]                 # Validate features.json

@@ -7,13 +7,12 @@ Start a coding session to implement the next pending feature.
 
 Follow the Coding Agent workflow:
 1. First load the agent-harness skill to get detailed instructions from references/coding-agent.md
-2. Run `pwd` to confirm current project directory
-3. Read progress.md for recent work
-4. Read features.json for current state
-5. Select next pending feature (respect dependencies)
-6. Implement the feature
-7. Test the implementation
-8. Update progress.md and features.json in the current project directory
-9. Commit changes
+2. Resolve project directory: run `python3 scripts/resolve_project_dir.py`, store output as PROJECT_DIR. Use this absolute path for all file operations.
+3. Read progress.md and features.json from PROJECT_DIR
+4. Select next pending feature (respect dependencies)
+5. Implement the feature
+6. Test the implementation
+7. Update progress.md and features.json in PROJECT_DIR
+8. Commit changes
 
-CRITICAL: Always operate on files in the current project directory (pwd), NOT in the skill directory.
+CRITICAL: Run `python3 scripts/resolve_project_dir.py` to get the correct project directory. Never use bare relative paths for features.json or progress.md.

@@ -31,9 +31,9 @@ Perform these checks in order before starting orchestration:
 
 ### 1. Confirm Location
 ```bash
-pwd
+python3 scripts/resolve_project_dir.py
 ```
-Verify you're in the correct project directory.
+Store the output as the absolute project directory. Use it for all reads/writes of `features.json` and `progress.md`.
 
 ### 2. Check for Uncompleted Sprint
 Read `features.json` and look for:
