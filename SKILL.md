@@ -72,6 +72,7 @@ Initialize new project tracking files.
 **Actions:**
 - Create `features.json` and `progress.md`
 - Run `python3 scripts/init_project.py "My App"`
+- Commit the initialized files: `git add features.json progress.md && git commit -m "chore: initialize project tracking"`
 
 ### `/agent-harness-sprint [requirements]`
 
@@ -86,8 +87,11 @@ Create or update sprint with feature breakdown.
 1. Archive completed sprints (if any)
 2. Analyze requirements
 3. Break into atomic features with acceptance criteria
-4. Update `features.json` and `progress.md`
-5. Read [sprint-agent.md](references/sprint-agent.md) for detailed workflow
+4. Update **only** `features.json` and `progress.md` — do NOT create extra files like summary documents
+5. Display sprint planning summary in terminal
+6. Ask user to confirm the sprint plan before committing
+7. After user confirms, commit: `git add features.json progress.md && git commit -m "chore: sprint planning - <sprint-name>"`
+8. Read [sprint-agent.md](references/sprint-agent.md) for detailed workflow
 
 ### `/agent-harness-code`
 
@@ -97,7 +101,8 @@ Start coding session for next feature.
 1. Review `progress.md` and `features.json`
 2. Select next pending feature
 3. Implement following session protocol
-4. Read [coding-agent.md](references/coding-agent.md) for protocol
+4. Commit code after implementation: `git add -A && git commit -m "feat(<scope>): <description>"`
+5. Read [coding-agent.md](references/coding-agent.md) for protocol
 
 ### `/agent-harness-996`
 

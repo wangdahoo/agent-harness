@@ -22,7 +22,7 @@
    ```bash
    git log --oneline -10
    ```
-   Read `progress.md` to understand previous sessions.
+   Read `progress.md` to understand previous sessions. This step is mandatory — it provides the context from prior sessions that enables continuity across context windows.
 
 3. **Review Feature Status**
    Read `features.json` to see:
@@ -34,7 +34,7 @@
 
 4. **Verify Project State**
    Run lint and build commands (see project's AGENTS.md).
-   
+
    **⚠️ If broken, fix existing issues before starting new work.**
 
 ### End of Session
@@ -44,7 +44,12 @@
 1. Update `progress.md` with session summary
 2. Update `features.json` if feature complete
 3. Ensure no lint/build errors
-4. Commit all changes
+4. Commit all changes — this is critical for maintaining project state across sessions:
+   ```bash
+   git add features.json progress.md [implementation files]
+   git commit -m "feat(<scope>): <description>"
+   ```
+   Never skip the commit step. Each session must end with a clean commit so the next session can start fresh.
 
 ## Implementation Process
 

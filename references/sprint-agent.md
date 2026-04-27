@@ -93,6 +93,8 @@ Rules:
 }
 ```
 
+Note: Feature IDs follow the format `s{N}-feat-{NNN}` where `N` matches the parent sprint number and `NNN` is a zero-padded sequential number.
+
 ### Complexity Estimation
 
 - **small**: < 2 hours, simple changes
@@ -109,6 +111,15 @@ Mark dependencies with feature IDs:
 
 ## File Schemas
 
+### ID Format Rules
+
+Sprint IDs and feature IDs must follow strict naming conventions for consistency and tooling compatibility:
+
+- **Sprint ID**: matches `^s\d{1,4}$` — e.g., `s1`, `s2`, `s10`, `s9999`
+- **Feature ID**: matches `^s\d{1,4}-feat-\d{3}$` — e.g., `s1-feat-001`, `s2-feat-010`, `s10-feat-003`
+
+The sprint number in the feature ID must match its parent sprint. Feature numbers are zero-padded to 3 digits and sequential within each sprint.
+
 ### features.json Structure
 
 ```json
@@ -121,7 +132,7 @@ Mark dependencies with feature IDs:
   },
   "sprints": [
     {
-      "id": "string (required, unique)",
+      "id": "string (required, unique, format: s{number})",
       "name": "string (required)",
       "goal": "string",
       "status": "planning | in_progress | completed | on_hold",
@@ -171,6 +182,10 @@ See [examples.md](examples.md) for complete examples.
 
 ## Output Requirements
 
+### File Management
+
+Only modify `features.json` and `progress.md`. Do NOT create additional files like planning summaries, architecture docs, or data model documents. All planning information goes into these two files.
+
 ### Update features.json
 
 Add new sprint with structured features following schema above.
@@ -206,6 +221,8 @@ Add planning session entry at top:
 
 ### Summary Output Format
 
+Display this summary in the terminal and ask the user to confirm before committing:
+
 ```markdown
 ## Sprint Planning Complete
 
@@ -228,6 +245,12 @@ Add planning session entry at top:
 
 ### Ready for Development
 Run the Coding Agent with the first pending feature: [first-feature-id]
+```
+
+After displaying the summary, ask the user to confirm. Once confirmed, commit:
+```bash
+git add features.json progress.md
+git commit -m "chore: sprint planning - <sprint-name>"
 ```
 
 ## Critical Rules
