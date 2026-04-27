@@ -29,6 +29,6 @@ Follow the 996 Agent workflow:
 6. Verify results and handle failures (mark blocked, continue others)
 7. Update features.json with all feature status changes
 8. Write progress.md entry summarizing orchestration results
-9. Commit changes: `chore: 996 orchestration complete - N features`
+9. Commit: `git add -A && git commit -m "chore: 996 orchestration complete - N features"`
 
 CRITICAL: Run `python3 scripts/resolve_project_dir.py` to get the correct project directory. Never use bare relative paths for features.json or progress.md.

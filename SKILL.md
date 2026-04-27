@@ -54,34 +54,34 @@ Show available commands and usage.
 **Output:**
 ```
 Agent Harness Commands:
-  /agent-harness-init <name>   - Initialize new project tracking files
-  /agent-harness-sprint [req]  - Create or update sprint with feature breakdown
-  /agent-harness-code          - Start coding session for next feature
-  /agent-harness-996           - Execute parallel coding with subagent orchestration
-  /agent-harness-status        - Show current project status
-  /agent-harness-archive       - Archive completed sprints
-  /agent-harness-force-archive - Force archive ALL sprints (including incomplete)
+  /agent-harness init <name>           - Initialize new project tracking files
+  /agent-harness sprint [req]          - Create or update sprint with feature breakdown
+  /agent-harness code                  - Start coding session for next feature
+  /agent-harness 996                   - Execute parallel coding with subagent orchestration
+  /agent-harness status                - Show current project status
+  /agent-harness archive               - Archive completed sprints
+  /agent-harness force-archive         - Force archive ALL sprints (including incomplete)
 ```
 
-### `/agent-harness-init <name>`
+### `/agent-harness init <name>`
 
 Initialize new project tracking files.
 
-**Example:** `/agent-harness-init My App`
+**Example:** `/agent-harness init My App`
 
 **Actions:**
 - Create `features.json` and `progress.md`
 - Run `python3 scripts/init_project.py "My App"`
 - Commit the initialized files: `git add features.json progress.md && git commit -m "chore: initialize project tracking"`
 
-### `/agent-harness-sprint [requirements]`
+### `/agent-harness sprint [requirements]`
 
 Create or update sprint with feature breakdown.
 
 **Examples:**
-- `/agent-harness-sprint` - Review current sprint and plan next
-- `/agent-harness-sprint Add user authentication with email and social login`
-- `/agent-harness-sprint Build dashboard with charts and filters`
+- `/agent-harness sprint` - Review current sprint and plan next
+- `/agent-harness sprint Add user authentication with email and social login`
+- `/agent-harness sprint Build dashboard with charts and filters`
 
 **Actions:**
 1. Archive completed sprints (if any)
@@ -93,7 +93,7 @@ Create or update sprint with feature breakdown.
 7. After user confirms, commit: `git add features.json progress.md && git commit -m "chore: sprint planning - <sprint-name>"`
 8. Read [sprint-agent.md](references/sprint-agent.md) for detailed workflow
 
-### `/agent-harness-code`
+### `/agent-harness code`
 
 Start coding session for next feature.
 
@@ -104,24 +104,25 @@ Start coding session for next feature.
 4. Commit code after implementation: `git add -A && git commit -m "feat(<scope>): <description>"`
 5. Read [coding-agent.md](references/coding-agent.md) for protocol
 
-### `/agent-harness-996`
+### `/agent-harness 996`
 
 Execute parallel coding tasks with subagent orchestration.
 
 **Examples:**
-- `/agent-harness-996` - Run parallel orchestration with default settings
-- `/agent-harness-996 --max-parallel=3` - Limit to 3 concurrent subagents
+- `/agent-harness 996` - Run parallel orchestration with default settings
+- `/agent-harness 996 --max-parallel=3` - Limit to 3 concurrent subagents
 
 **Actions:**
 1. Check for uncompleted sprint
 2. Analyze dependencies and file conflicts
 3. Dispatch subagents for parallel execution
 4. Verify results and update tracking files
-5. Read [996-agent.md](references/996-agent.md) for protocol
+5. Commit: `git add -A && git commit -m "chore: 996 orchestration complete - N features"`
+6. Read [996-agent.md](references/996-agent.md) for protocol
 
 **Use when:** You want to accelerate sprint completion by running multiple coding tasks in parallel.
 
-### `/agent-harness-status`
+### `/agent-harness status`
 
 Show current project status.
 
@@ -131,7 +132,7 @@ Show current project status.
 - Next recommended feature
 - Run `python3 scripts/status.py`
 
-### `/agent-harness-archive`
+### `/agent-harness archive`
 
 Archive completed sprints.
 
@@ -139,8 +140,9 @@ Archive completed sprints.
 - List completed sprints
 - Move to `.agent-harness/archived/`
 - Run `python3 scripts/archive_sprint.py`
+- Commit: `git add -A && git commit -m "chore: archive completed sprint"`
 
-### `/agent-harness-force-archive`
+### `/agent-harness force-archive`
 
 Force archive ALL sprints (including incomplete ones).
 
@@ -151,6 +153,7 @@ Force archive ALL sprints (including incomplete ones).
 - Confirm with user
 - Move all to `.agent-harness/archived/`
 - Run `python3 scripts/archive_sprint.py --force`
+- Commit: `git add -A && git commit -m "chore: force archive all sprints"`
 
 ## Quick Start
 

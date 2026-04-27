@@ -11,4 +11,5 @@ Use `find ~ -path "*/agent-harness/scripts/init_project.py" -not -path "*/archiv
 Steps:
 1. Find the script path, then run: `python3 <SCRIPT_PATH> "$ARGUMENTS" --project-dir "$(pwd)"`
 2. Confirm files were created successfully in the current project directory
-3. Suggest next step: run `/agent-harness-sprint` to plan features
+3. Commit: `git add features.json progress.md .gitignore && git commit -m "chore: initialize project tracking"`
+4. Suggest next step: run `/agent-harness-sprint` to plan features
