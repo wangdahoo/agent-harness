@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Agent Harness is a Claude skill for managing long-running AI projects across multiple context windows. Three agent roles collaborate: Sprint Agent plans features, Coding Agent implements them one at a time, 996 Agent runs multiple features in parallel via subagents.
 
-Supports two CLI formats: **OpenCode** (`/agent-harness-init`) and **Claude Code** (`/agent-harness init`). Command definitions live in `.opencode/commands/`.
+Command definitions and slash commands are defined in SKILL.md.
 
 ## Commands
 

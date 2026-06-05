@@ -18,27 +18,10 @@
 npx skills install wangdahoo/agent-harness
 ```
 
-## 兼容性
-
-Agent Harness 支持多种 AI CLI 工具：
-
-| CLI | 命令格式 | 配置目录 |
-|-----|----------|----------|
-| **OpenCode** | `/agent-harness-init` | `.opencode/commands/` |
-| **Claude Code** | `/agent-harness init` | `.claude/skills/` |
-
-两种 CLI 的功能完全相同，只是命令格式略有不同。
-
 ## 快速开始
 
 ### 1. 初始化项目
 
-**OpenCode:**
-```
-/agent-harness-init My Project
-```
-
-**Claude Code:**
 ```
 /agent-harness init My Project
 ```
@@ -49,12 +32,6 @@ Agent Harness 支持多种 AI CLI 工具：
 
 ### 2. 规划 Sprint
 
-**OpenCode:**
-```
-/agent-harness-sprint 实现用户认证系统，包括邮箱登录、社交登录和密码重置
-```
-
-**Claude Code:**
 ```
 /agent-harness sprint 实现用户认证系统，包括邮箱登录、社交登录和密码重置
 ```
@@ -68,12 +45,6 @@ Sprint Agent 会：
 
 ### 3. 开始编码
 
-**OpenCode:**
-```
-/agent-harness-code
-```
-
-**Claude Code:**
 ```
 /agent-harness code
 ```
@@ -87,12 +58,6 @@ Coding Agent 会：
 
 ### 4. 查看状态
 
-**OpenCode:**
-```
-/agent-harness-status
-```
-
-**Claude Code:**
 ```
 /agent-harness status
 ```
@@ -106,22 +71,6 @@ Coding Agent 会：
 ## 斜杠命令
 
 输入 `/agent-harness` 可查看帮助信息。所有命令支持自动补全。
-
-### OpenCode 格式
-
-| 命令 | 用途 | 示例 |
-|------|------|------|
-| `/agent-harness` | 显示帮助信息 | `/agent-harness` |
-| `/agent-harness-init <name>` | 初始化新项目 | `/agent-harness-init Task Manager` |
-| `/agent-harness-sprint [req]` | 创建或更新 Sprint | `/agent-harness-sprint 添加用户仪表板` |
-| `/agent-harness-code` | 开始编码会话 | `/agent-harness-code` |
-| `/agent-harness-996` | 并行执行多个功能 | `/agent-harness-996` |
-| `/agent-harness-996 --max-parallel=3` | 限制并发数 | `/agent-harness-996 --max-parallel=3` |
-| `/agent-harness-status` | 查看项目状态 | `/agent-harness-status` |
-| `/agent-harness-archive` | 归档完成的 Sprint | `/agent-harness-archive` |
-| `/agent-harness-force-archive` | 强制归档所有 Sprint | `/agent-harness-force-archive` |
-
-### Claude Code 格式
 
 | 命令 | 用途 | 示例 |
 |------|------|------|
@@ -247,8 +196,8 @@ Coding Agent 会：
 ```
 
 **模式选择：**
-- **串行模式** (`/agent-harness-code`)：一次实现一个功能，适合复杂功能
-- **并行模式** (`/agent-harness-996`)：并行实现多个独立功能，加速 Sprint 完成
+- **串行模式** (`/agent-harness code`)：一次实现一个功能，适合复杂功能
+- **并行模式** (`/agent-harness 996`)：并行实现多个独立功能，加速 Sprint 完成
 
 ## 文件结构
 
@@ -335,7 +284,7 @@ Coding Agent 会：
 
 ### init_project.py
 
-由 `/agent-harness-init` 调用，初始化项目跟踪文件。
+由 `/agent-harness init` 调用，初始化项目跟踪文件。
 
 ```bash
 python3 scripts/init_project.py <name> [-d description] [-o output-dir]
@@ -347,7 +296,7 @@ python3 scripts/init_project.py <name> [-d description] [-o output-dir]
 
 ### status.py
 
-由 `/agent-harness-status` 调用，显示当前项目状态。
+由 `/agent-harness status` 调用，显示当前项目状态。
 
 ```bash
 python3 scripts/status.py
@@ -369,7 +318,7 @@ python3 scripts/validate_structure.py
 
 ### archive_sprint.py
 
-由 `/agent-harness-archive` 和 `/agent-harness-force-archive` 调用，归档 Sprint。
+由 `/agent-harness archive` 和 `/agent-harness force-archive` 调用，归档 Sprint。
 
 ```bash
 python3 scripts/archive_sprint.py [--list] [--dry-run] [--force]
@@ -506,19 +455,6 @@ Sprint Agent        →  创建下一个 Sprint 或归档
 
 ### 场景 1：启动新项目
 
-**OpenCode:**
-```
-用户: /agent-harness-init Task Manager
-Claude: [创建 features.json 和 progress.md]
-
-用户: /agent-harness-sprint 构建任务管理应用，支持创建、编辑、删除任务，以及标签分类
-Claude: [分析需求 → 拆分为 8 个功能 → 更新 features.json]
-
-用户: /agent-harness-code
-Claude: [实现第一个功能 → 更新进度 → 提交]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness init Task Manager
 Claude: [创建 features.json 和 progress.md]
@@ -532,16 +468,6 @@ Claude: [实现第一个功能 → 更新进度 → 提交]
 
 ### 场景 2：继续现有项目
 
-**OpenCode:**
-```
-用户: /agent-harness-status
-Claude: [显示 Sprint 1 进行中，3/8 功能完成，下一个: s1-feat-004]
-
-用户: /agent-harness-code
-Claude: [查看进度 → 选择 s1-feat-004 → 实现 → 提交]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness status
 Claude: [显示 Sprint 1 进行中，3/8 功能完成，下一个: s1-feat-004]
@@ -552,16 +478,6 @@ Claude: [查看进度 → 选择 s1-feat-004 → 实现 → 提交]
 
 ### 场景 3：处理阻塞
 
-**OpenCode:**
-```
-用户: /agent-harness-status
-Claude: [显示 s1-feat-005 被阻塞: 等待第三方 API 密钥]
-
-用户: 先跳过这个，实现下一个
-Claude: [选择 s1-feat-006 (无依赖) → 实现 → 提交]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness status
 Claude: [显示 s1-feat-005 被阻塞: 等待第三方 API 密钥]
@@ -572,15 +488,6 @@ Claude: [选择 s1-feat-006 (无依赖) → 实现 → 提交]
 
 ### 场景 4：归档完成的 Sprint
 
-**OpenCode:**
-```
-用户: /agent-harness-archive
-Claude: [列出完成的 Sprint 1]
-用户: 确认
-Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness archive
 Claude: [列出完成的 Sprint 1]
@@ -592,15 +499,6 @@ Claude: [归档到 .agent-harness/archived/ → 清理 features.json]
 
 当你需要重置项目、清理所有 Sprint 或重新规划时使用。
 
-**OpenCode:**
-```
-用户: /agent-harness-force-archive
-Claude: [警告：将归档所有 Sprint，包括未完成的]
-用户: 确认强制归档
-Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 project 信息]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness force-archive
 Claude: [警告：将归档所有 Sprint，包括未完成的]
@@ -619,17 +517,6 @@ Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 
 
 当你有多个独立功能需要快速完成时：
 
-**OpenCode:**
-```
-用户: /agent-harness-996
-Claude: [分析依赖和文件冲突 → 创建执行批次]
-       批次 1 (并行): s1-feat-002, s1-feat-003, s1-feat-004
-       批次 2 (并行): s1-feat-005, s1-feat-006
-用户: [确认执行]
-Claude: [调度子 Agent → 并行执行 → 验证结果 → 更新状态]
-```
-
-**Claude Code:**
 ```
 用户: /agent-harness 996
 Claude: [分析依赖和文件冲突 → 创建执行批次]

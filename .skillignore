@@ -4,6 +4,7 @@ CLAUDE.md
 README.md
 .git/
 .claude/
+.opencode/
 scripts/release.py
 dist/
 
