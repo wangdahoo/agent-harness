@@ -12,16 +12,17 @@ Command definitions and slash commands are defined in SKILL.md.
 
 ```bash
 # Framework scripts (all support --project-dir/-p flag)
-python3 scripts/init_project.py <name> [-d "description"]   # Initialize tracking files
-python3 scripts/status.py                                   # Show project status
-python3 scripts/validate_structure.py                       # Validate features.json
+python3 scripts/resolve_project_dir.py [-s dir]               # Find project dir by walking up for features.json/progress.md
+python3 scripts/init_project.py <name> [-d "description"]     # Initialize tracking files
+python3 scripts/status.py                                     # Show project status
+python3 scripts/validate_structure.py                         # Validate features.json
 python3 scripts/archive_sprint.py [--list|--dry-run|--force]  # Archive sprints
 
 # Release/packaging (supports semver: v1.0.0, 0.4.0-beta.2)
-python3 scripts/release.py <version> [--dry-run]            # Package & publish to GitHub Releases
+python3 scripts/release.py <version> [--dry-run]              # Package into dist/agent-harness.skill, create git tag + GitHub Release
 
 # Python linting
-python3 -m py_compile scripts/*.py                          # Syntax check all scripts
+python3 -m py_compile scripts/*.py                            # Syntax check all scripts
 ```
 
 ## Architecture
@@ -44,6 +45,15 @@ python3 -m py_compile scripts/*.py                          # Syntax check all s
 - `assets/` - Templates for `features.json`, `progress.md`, `AGENTS.md` used by `init_project.py`
 - `.skillignore` - Exclude patterns for skill packaging (like `.gitignore` for `.skill` zip)
 - `release.py` packages into `dist/agent-harness.skill` respecting `.skillignore`, creates git tag + GitHub Release
+
+### Loading Architecture
+The skill uses three-level progressive loading to minimize context usage:
+1. **Metadata** - Always loaded (~100 words)
+2. **SKILL.md** - Loaded when skill is triggered (~150 lines)
+3. **References** - Loaded per agent role (`sprint-agent.md`, `coding-agent.md`, `996-agent.md`, `examples.md`)
+
+### Project Directory Resolution
+`resolve_project_dir.py` walks up from cwd to find the directory containing `features.json` or `progress.md`, skipping `.agent-harness`, `node_modules`, `.git`, `__pycache__`. Every agent workflow calls this first to ensure files are written to the correct location.
 
 ## Status Values
 
@@ -74,3 +84,4 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`
 4. **Always leave working code** - Never break the build
 5. **Never delete features** - Only change status
 6. **Validate before write** - Run validate_structure.py after modifying features.json
+7. **Windows encoding** - Prefix script commands with `$env:PYTHONIOENCODING="utf-8";` for GBK compatibility
