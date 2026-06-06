@@ -5,11 +5,11 @@
 ## 核心特性
 
 - **跨上下文持续** - 通过结构化文件在上下文重置后保持项目状态
-- **多 Agent 协作** - Sprint Agent 规划，Coding Agent 实现，996 Agent 并行执行
+- **多 Agent 协作** - Sprint Agent 规划，Coding Agent 实现（支持并行模式）
 - **进度可追溯** - 每个会话的详细日志和功能状态跟踪
 - **质量保证** - 每个会话结束时代码必须可工作
 - **依赖管理** - 自动处理功能依赖关系和实现顺序
-- **并行执行** - 996 模式支持多任务并行处理
+- **并行执行** - `code --parallel` 模式支持多任务并行处理
 - **斜杠命令** - 支持简洁的命令快速访问核心功能
 
 ## 安装
@@ -78,8 +78,8 @@ Coding Agent 会：
 | `/agent-harness init <name>` | 初始化新项目 | `/agent-harness init Task Manager` |
 | `/agent-harness sprint [req]` | 创建或更新 Sprint | `/agent-harness sprint 添加用户仪表板` |
 | `/agent-harness code` | 开始编码会话 | `/agent-harness code` |
-| `/agent-harness 996` | 并行执行多个功能 | `/agent-harness 996` |
-| `/agent-harness 996 --max-parallel=3` | 限制并发数 | `/agent-harness 996 --max-parallel=3` |
+| `/agent-harness code --parallel` | 并行执行多个功能 | `/agent-harness code --parallel` |
+| `/agent-harness code --parallel --max-parallel=3` | 限制并发数 | `/agent-harness code --parallel --max-parallel=3` |
 | `/agent-harness status` | 查看项目状态 | `/agent-harness status` |
 | `/agent-harness archive` | 归档完成的 Sprint | `/agent-harness archive` |
 | `/agent-harness force-archive` | 强制归档所有 Sprint | `/agent-harness force-archive` |
@@ -125,7 +125,7 @@ Coding Agent 会：
 3. 确保无错误
 4. 提交更改
 
-### 996 Agent（并行执行）
+### Coding Agent 并行模式（`code --parallel`）
 
 **触发时机：**
 - 需要加速 Sprint 完成
@@ -179,8 +179,8 @@ Coding Agent 会：
          │                        │
          ↓                        ↓
 ┌─────────────────┐      ┌─────────────────┐
-│  Coding Agent   │      │   996 Agent     │ ← 并行执行
-│  (串行模式)      │      │  (并行模式)      │
+│  Coding Agent   │      │  Coding Agent   │ ← 并行执行
+│  (串行模式)      │      │  (--parallel)    │
 └────────┬────────┘      └────────┬────────┘
          │                        │
          └──────────┬─────────────┘
@@ -197,7 +197,7 @@ Coding Agent 会：
 
 **模式选择：**
 - **串行模式** (`/agent-harness code`)：一次实现一个功能，适合复杂功能
-- **并行模式** (`/agent-harness 996`)：并行实现多个独立功能，加速 Sprint 完成
+- **并行模式** (`/agent-harness code --parallel`)：并行实现多个独立功能，加速 Sprint 完成
 
 ## 文件结构
 
@@ -361,7 +361,7 @@ python3 scripts/release.py <version> [--dry-run]
 
 **解决方案：**
 1. **结构化文件** - 用 `features.json` 和 `progress.md` 持久化项目状态
-2. **多 Agent 模式** - Sprint Agent 专注规划，Coding Agent 专注实现，996 Agent 并行加速
+2. **多 Agent 模式** - Sprint Agent 专注规划，Coding Agent 专注实现（支持并行模式加速）
 3. **单功能会话** - 每个会话只实现一个功能，确保质量和焦点
 4. **强制协议** - 开始和结束会话的固定流程，确保一致性
 
@@ -373,8 +373,7 @@ Agent Harness 使用三级加载系统：
 2. **SKILL.md 主体** - Skill 触发时加载（~150 行）
 3. **References** - 按需加载
    - Sprint Agent 加载 `sprint-agent.md`
-   - Coding Agent 加载 `coding-agent.md`
-   - 996 Agent 加载 `996-agent.md`
+   - Coding Agent 加载 `coding-agent.md`（包含 Parallel Mode）
    - 示例按需从 `examples.md` 加载
 
 这确保了每个 Agent 只看到相关内容，最小化上下文占用。
@@ -395,14 +394,14 @@ Coding Agent (会话 N)  →  实现功能 N
 Sprint Agent        →  创建下一个 Sprint 或归档
 ```
 
-**或使用 996 并行模式加速：**
+**或使用 `code --parallel` 并行模式加速：**
 
 ```
 Sprint Agent        →  创建/更新 Sprint
     ↓
 features.json       →  功能定义和状态
     ↓
-996 Agent           →  分析依赖和文件冲突
+Coding Agent        →  分析依赖和文件冲突 (--parallel)
     ↓
 子 Agent 批次 1     →  并行实现功能 1, 2, 3
     ↓
@@ -413,7 +412,7 @@ Sprint Agent        →  创建下一个 Sprint 或归档
 
 这个循环确保：
 - 每次只处理一个功能，降低复杂度（串行模式）
-- 或并行处理多个独立功能，加速完成（996 模式）
+- 或并行处理多个独立功能，加速完成（`--parallel` 模式）
 - 每个会话都留下可工作的代码
 - 进度可追溯，决策有记录
 
@@ -513,12 +512,12 @@ Claude: [归档所有 Sprint → 清空 features.json 中的 sprints → 保留 
 
 **注意：** 这将归档所有 Sprint，不管它们的状态如何（包括 in_progress、planning、blocked 等）。归档的数据不会丢失，都保存在 `.agent-harness/archived/` 中。
 
-### 场景 6：并行执行多个功能（996 模式）
+### 场景 6：并行执行多个功能（`code --parallel` 模式）
 
 当你有多个独立功能需要快速完成时：
 
 ```
-用户: /agent-harness 996
+用户: /agent-harness code --parallel
 Claude: [分析依赖和文件冲突 → 创建执行批次]
        批次 1 (并行): s1-feat-002, s1-feat-003, s1-feat-004
        批次 2 (并行): s1-feat-005, s1-feat-006
@@ -571,8 +570,7 @@ Sprint Agent 和 Coding Agent 会自动验证 `features.json` 结构。如果需
 
 - **[SKILL.md](SKILL.md)** - Skill 定义和命令
 - **[references/sprint-agent.md](references/sprint-agent.md)** - Sprint Agent 工作流程和模式
-- **[references/coding-agent.md](references/coding-agent.md)** - Coding Agent 会话协议
-- **[references/996-agent.md](references/996-agent.md)** - 996 Agent 并行编排协议
+- **[references/coding-agent.md](references/coding-agent.md)** - Coding Agent 会话协议（包含 Parallel Mode）
 - **[references/examples.md](references/examples.md)** - 完整的示例
 
 ## 技术要求

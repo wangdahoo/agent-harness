@@ -1,7 +1,7 @@
 ---
 name: agent-harness
-description: "Framework for long-running AI agents across multiple context windows. USE WHEN user types /agent-harness or mentions sprint planning, feature breakdown, multi-session projects. Subcommands: init, sprint, code, 996, status, archive, force-archive."
-argument-hint: init|sprint|code|996|status|archive|force-archive [args...]
+description: "Framework for long-running AI agents across multiple context windows. USE WHEN user types /agent-harness or mentions sprint planning, feature breakdown, multi-session projects. Subcommands: init, sprint, code, status, archive, force-archive."
+argument-hint: init|sprint|code|status|archive|force-archive [args...]
 user-invocable: true
 ---
 
@@ -15,8 +15,7 @@ When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow
 |------------|--------|
 | `init <name>` | Run `python3 scripts/init_project.py "<name>" --project-dir "$(pwd)"` |
 | `sprint [req]` | Execute Sprint Agent workflow (see references/sprint-agent.md) |
-| `code` | Execute Coding Agent workflow (see references/coding-agent.md) |
-| `996` | Execute 996 parallel orchestration (see references/996-agent.md) |
+| `code [--parallel]` | Execute Coding Agent workflow; `--parallel` enables Parallel Mode (see references/coding-agent.md) |
 | `status` | Run `python3 scripts/status.py --project-dir "$(pwd)"` |
 | `archive` | Run archive workflow |
 | `force-archive` | Run force archive workflow |
@@ -25,8 +24,8 @@ When invoked as `/agent-harness <subcommand>`, route to the appropriate workflow
 **Usage examples:**
 - `/agent-harness init "My Project"` - Initialize new project
 - `/agent-harness sprint "Add authentication"` - Plan sprint
-- `/agent-harness code` - Start coding session
-- `/agent-harness 996` - Execute parallel coding with subagent orchestration
+- `/agent-harness code` - Start coding session (single feature)
+- `/agent-harness code --parallel` - Execute multiple features in parallel (Parallel Mode)
 - `/agent-harness status` - Show status
 
 CRITICAL: Always operate on files in the current project directory, NOT in the skill directory. At the start of every workflow, run `python3 scripts/resolve_project_dir.py` to get the correct absolute path. Use this path for ALL reads/writes of `features.json` and `progress.md`.
@@ -38,8 +37,7 @@ Framework for executing complex, multi-session projects using Sprint-Coding agen
 Agent Harness enables Claude to manage long-running projects by:
 
 - **Sprint Agent**: Plans features and breaks down requirements
-- **Coding Agent**: Implements features one at a time
-- **996 Agent**: Orchestrates parallel feature implementation with subagents
+- **Coding Agent**: Implements features (single or parallel via `--parallel`)
 - **Progress Tracking**: Maintains context across sessions
 - **Quality Gates**: Ensures working code at each step
 
@@ -56,8 +54,7 @@ Show available commands and usage.
 Agent Harness Commands:
   /agent-harness init <name>           - Initialize new project tracking files
   /agent-harness sprint [req]          - Create or update sprint with feature breakdown
-  /agent-harness code                  - Start coding session for next feature
-  /agent-harness 996                   - Execute parallel coding with subagent orchestration
+  /agent-harness code [--parallel]     - Start coding session (--parallel for Parallel Mode)
   /agent-harness status                - Show current project status
   /agent-harness archive               - Archive completed sprints
   /agent-harness force-archive         - Force archive ALL sprints (including incomplete)
@@ -93,34 +90,29 @@ Create or update sprint with feature breakdown.
 7. After user confirms, commit: `git add features.json progress.md && git commit -m "chore: sprint planning - <sprint-name>"`
 8. Read [sprint-agent.md](references/sprint-agent.md) for detailed workflow
 
-### `/agent-harness code`
+### `/agent-harness code [--parallel]`
 
 Start coding session for next feature.
 
-**Actions:**
+**Examples:**
+- `/agent-harness code` - Implement next single feature
+- `/agent-harness code --parallel` - Run parallel orchestration (Parallel Mode)
+- `/agent-harness code --parallel --max-parallel=3` - Limit to 3 concurrent subagents
+
+**Default mode (single feature):**
 1. Review `progress.md` and `features.json`
 2. Select next pending feature
 3. Implement following session protocol
 4. Commit code after implementation: `git add -A && git commit -m "feat(<scope>): <description>"`
 5. Read [coding-agent.md](references/coding-agent.md) for protocol
 
-### `/agent-harness 996`
-
-Execute parallel coding tasks with subagent orchestration.
-
-**Examples:**
-- `/agent-harness 996` - Run parallel orchestration with default settings
-- `/agent-harness 996 --max-parallel=3` - Limit to 3 concurrent subagents
-
-**Actions:**
-1. Check for uncompleted sprint
+**Parallel Mode (`--parallel`):**
+1. Check for uncompleted sprint and clean working tree
 2. Analyze dependencies and file conflicts
-3. Dispatch subagents for parallel execution
+3. Dispatch subagents for parallel execution in batches (max 5)
 4. Verify results and update tracking files
-5. Commit: `git add -A && git commit -m "chore: 996 orchestration complete - N features"`
-6. Read [996-agent.md](references/996-agent.md) for protocol
-
-**Use when:** You want to accelerate sprint completion by running multiple coding tasks in parallel.
+5. Commit: `git add -A && git commit -m "chore: parallel orchestration complete - N features"`
+6. Read [coding-agent.md#parallel-mode](references/coding-agent.md) for protocol
 
 ### `/agent-harness status`
 
@@ -180,13 +172,22 @@ python3 scripts/validate_structure.py
 
 **When:** Each development session
 
-**Session Protocol:**
+**Single Feature Mode (default):**
 
 | Phase | Actions |
 |-------|---------|
 | **Start** | `pwd` → read `progress.md` → `git log` → run lint/build |
 | **Work** | Select ONE feature → implement → test |
 | **End** | Update `progress.md` → update `features.json` → commit |
+
+**Parallel Mode (`--parallel`):**
+
+| Phase | Actions |
+|-------|---------|
+| **Analyze** | Build dependency graph → detect file conflicts → create batches |
+| **Dispatch** | Spawn subagents per batch → monitor completion |
+| **Verify** | Check results → lint/build → update tracking files |
+| **Commit** | Update `features.json` + `progress.md` → commit |
 
 **→ Read [references/coding-agent.md](references/coding-agent.md) for protocol, testing, and schemas**
 
@@ -231,8 +232,7 @@ CRITICAL: Always prefix with `$env:PYTHONIOENCODING="utf-8";` when running scrip
 
 **By Agent Role:**
 - **[sprint-agent.md](references/sprint-agent.md)** - Sprint Agent: workflow, feature breakdown, schemas
-- **[coding-agent.md](references/coding-agent.md)** - Coding Agent: session protocol, testing, schemas
-- **[996-agent.md](references/996-agent.md)** - 996 Agent: parallel orchestration, subagent dispatch, conflict detection
+- **[coding-agent.md](references/coding-agent.md)** - Coding Agent: session protocol, parallel mode, testing, schemas
 
 **Complete Examples:**
 - **[examples.md](references/examples.md)** - Realistic examples of features.json, progress.md, and workflows

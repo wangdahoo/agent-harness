@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Agent Harness is a Claude skill for managing long-running AI projects across multiple context windows. Three agent roles collaborate: Sprint Agent plans features, Coding Agent implements them one at a time, 996 Agent runs multiple features in parallel via subagents.
+Agent Harness is a Claude skill for managing long-running AI projects across multiple context windows. Two agent roles collaborate: Sprint Agent plans features, Coding Agent implements them (single feature or parallel via `--parallel` flag).
 
 Command definitions and slash commands are defined in SKILL.md.
 
@@ -32,14 +32,12 @@ python3 -m py_compile scripts/*.py                            # Syntax check all
 - `progress.md` - Session log (prepend new entries)
 - `SKILL.md` - Skill definition with subcommand routing and slash commands
 - `references/sprint-agent.md` - Sprint Agent workflow
-- `references/coding-agent.md` - Coding Agent session protocol
-- `references/996-agent.md` - 996 Agent parallel orchestration protocol
+- `references/coding-agent.md` - Coding Agent session protocol (includes Parallel Mode)
 
 ### Agent Cycle
 1. **Sprint Agent** - Analyzes requirements, breaks into atomic features with acceptance criteria, orders by dependencies
-2. **Coding Agent** - Implements ONE feature per session, tests, updates tracking files, commits
-3. **996 Agent** - Analyzes dependency graph and file conflicts, dispatches subagents in parallel batches (max 5), verifies results
-4. **Loop** until sprint complete, then archive and plan next
+2. **Coding Agent** - Implements features (single or parallel with `--parallel`), tests, updates tracking files, commits
+3. **Loop** until sprint complete, then archive and plan next
 
 ### Templates and Packaging
 - `assets/` - Templates for `features.json`, `progress.md`, `AGENTS.md` used by `init_project.py`
@@ -50,7 +48,7 @@ python3 -m py_compile scripts/*.py                            # Syntax check all
 The skill uses three-level progressive loading to minimize context usage:
 1. **Metadata** - Always loaded (~100 words)
 2. **SKILL.md** - Loaded when skill is triggered (~150 lines)
-3. **References** - Loaded per agent role (`sprint-agent.md`, `coding-agent.md`, `996-agent.md`, `examples.md`)
+3. **References** - Loaded per agent role (`sprint-agent.md`, `coding-agent.md`, `examples.md`)
 
 ### Project Directory Resolution
 `resolve_project_dir.py` walks up from cwd to find the directory containing `features.json` or `progress.md`, skipping `.agent-harness`, `node_modules`, `.git`, `__pycache__`. Every agent workflow calls this first to ensure files are written to the correct location.
