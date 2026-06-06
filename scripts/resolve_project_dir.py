@@ -21,18 +21,18 @@ MARKER_FILES = ["features.json", "progress.md"]
 WRONG_DIRS = [".agent-harness", "node_modules", ".git", "__pycache__"]
 
 
-def find_project_dir(start_dir: Path) -> Path:
+def find_project_dir(start_dir: Path) -> "Path | None":
     """Walk up from start_dir to find the directory containing marker files.
 
     Skips known non-project directories like .agent-harness and node_modules.
-    Returns the first non-skipped parent if no markers are found.
+    Returns None if no marker files are found in any parent directory.
     """
     current = start_dir.resolve()
-    last_valid = current
 
     while current != current.parent:
-        if current.name not in WRONG_DIRS:
-            last_valid = current
+        if current.name in WRONG_DIRS:
+            current = current.parent
+            continue
 
         for marker in MARKER_FILES:
             if (current / marker).exists():
@@ -42,12 +42,11 @@ def find_project_dir(start_dir: Path) -> Path:
 
     # Check root directory too
     if current.name not in WRONG_DIRS:
-        last_valid = current
-    for marker in MARKER_FILES:
-        if (current / marker).exists():
-            return current
+        for marker in MARKER_FILES:
+            if (current / marker).exists():
+                return current
 
-    return last_valid
+    return None
 
 
 def main():
@@ -65,18 +64,15 @@ def main():
     start = Path(args.start_dir) if args.start_dir else Path.cwd()
     project_dir = find_project_dir(start)
 
-    # Verify marker files exist (or this might be a new project)
-    has_markers = any((project_dir / m).exists() for m in MARKER_FILES)
-
-    print(str(project_dir))
-
-    if not has_markers:
+    if project_dir is None:
         print(
-            f"Warning: No marker files found. Using {project_dir} as project directory.",
+            "Error: No project directory found. No features.json or progress.md in any parent directory. "
+            "Run /agent-harness init to create a new project.",
             file=sys.stderr,
         )
         return 1
 
+    print(str(project_dir))
     return 0
 
 
