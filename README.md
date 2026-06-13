@@ -1,3 +1,5 @@
+> The project is archived, refer to https://github.com/wangdahoo/golden-hoop-spell for a improved skill suite instead.
+
 # Agent Harness
 
 **Agent Harness** 是一个用于管理长期 AI 项目的 Claude Skill，使 Claude 能够跨多个上下文窗口执行复杂的多会话项目。基于 Sprint-Coding Agent 循环模式，确保代码质量和进度可追溯。
